@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Business Rescue Mission</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0B0E17;
+    --ink-2: #111622;
+    --surface: #161C2B;
+    --surface-2: #1E2638;
+    --border: #2A3244;
+    --border-strong: #3D4860;
+    --text: #E8EAED;
+    --text-muted: #8B92A7;
+    --text-dim: #5A6478;
+    --amber: #F5A623;
+    --amber-glow: rgba(245, 166, 35, 0.35);
+    --emerald: #10B981;
+    --red: #EF4444;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'Lora', Georgia, serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 40px 24px 80px;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(42, 50, 68, 0.2) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(42, 50, 68, 0.2) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
+    z-index: 0;
+  }
+
+  .wrap { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+  .header-brand { font-family: var(--font-display); font-size: 28px; letter-spacing: 0.15em; color: var(--amber); }
+  .header-meta { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+
+  h1 { font-family: var(--font-display); font-size: 56px; letter-spacing: 0.04em; line-height: 1; margin-bottom: 8px; }
+  .subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 32px; max-width: 60ch; }
+
+  h2 { font-family: var(--font-display); font-size: 22px; letter-spacing: 0.12em; color: var(--amber); margin: 32px 0 16px; }
+
+  .panel {
+    background: linear-gradient(180deg, var(--surface) 0%, var(--ink-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .panel::before { content: ''; position: absolute; top: -1px; left: -1px; right: -1px; height: 2px; background: linear-gradient(90deg, transparent, var(--amber), transparent); opacity: 0.6; }
+
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; color: var(--amber); text-transform: uppercase; margin-bottom: 8px; }
+  .field .hint { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-bottom: 8px; letter-spacing: 0.1em; }
+
+  input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 15px;
+    background: var(--ink);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    padding: 12px 14px;
+    border-radius: 2px;
+    line-height: 1.5;
+    transition: border-color 0.2s ease;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--amber);
+    box-shadow: 0 0 16px var(--amber-glow);
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  textarea.large { min-height: 140px; }
+
+  .btn {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    padding: 12px 24px;
+    background: var(--amber);
+    color: var(--ink);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+  .btn:hover { background: #FFB93A; box-shadow: 0 0 24px var(--amber-glow); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border-strong); }
+  .btn-ghost:hover { background: var(--surface-2); border-color: var(--amber); color: var(--amber); box-shadow: none; }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-danger:hover { background: #FF5555; box-shadow: 0 0 24px rgba(239, 68, 68, 0.35); }
+
+  .actions-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+
+  .room-section { border-left: 3px solid var(--amber); padding-left: 16px; margin-bottom: 24px; }
+  .room-section h3 { font-family: var(--font-display); font-size: 20px; letter-spacing: 0.1em; margin-bottom: 8px; color: var(--text); }
+  .room-section .dept-label { font-family: var(--font-mono); font-size: 10px; color: var(--amber); letter-spacing: 0.3em; }
+
+  .toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 12px 20px;
+    background: var(--ink-2);
+    border: 1px solid var(--emerald);
+    color: var(--emerald);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    border-radius: 2px;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+  }
+  .toast.show { transform: translateX(0); }
+  .toast.err { border-color: var(--red); color: var(--red); }
+
+  .login-wrap { min-height: 60vh; display: flex; align-items: center; justify-content: center; }
+  .login-card { background: var(--ink-2); border: 1px solid var(--border); padding: 40px; border-radius: 4px; max-width: 420px; width: 100%; }
+  .login-card h1 { font-size: 36px; margin-bottom: 24px; }
+  .hint-note { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-top: 16px; letter-spacing: 0.1em; line-height: 1.6; }
+
+  .hidden { display: none !important; }
+
+  .security-note {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid var(--red);
+    border-radius: 2px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+  }
+  .security-note strong { color: var(--red); }
+
+  .help-box {
+    background: var(--ink-2);
+    border: 1px dashed var(--border-strong);
+    padding: 16px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .help-box strong { color: var(--amber); }
+
+  .back-link { display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; color: var(--text-muted); text-decoration: none; margin-bottom: 24px; }
+  .back-link:hover { color: var(--amber); }
+
+  .saved-indicator { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--text-dim); }
+  .saved-indicator.modified { color: var(--amber); }
+</style>
+</head>
+<body>
+
+<div class="wrap login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="header-meta" style="margin-bottom: 8px;">Restricted Access</div>
+    <h1>Admin <span style="color: var(--amber);">Control</span></h1>
+    <p class="subtitle" style="margin-bottom: 24px;">Master view for editing mission content and exporting configurations.</p>
+
+    <div class="field">
+      <label for="pwInput">Password</label>
+      <input type="password" id="pwInput" placeholder="Enter password" autofocus>
+    </div>
+    <button class="btn" onclick="tryLogin()">Unlock</button>
+    <a href="index.html" class="btn btn-ghost" style="margin-left: 8px; text-decoration: none; display: inline-block;">← Back to game</a>
+
+    <div id="loginError" class="hint-note" style="color: var(--red); min-height: 14px; margin-top: 12px;"></div>
+  </div>
+</div>
+
+<div class="wrap hidden" id="adminWrap">
+
+  <div class="header">
+    <div class="header-brand">◉ ADMIN CONTROL</div>
+    <div class="header-meta">
+      <span class="saved-indicator" id="savedIndicator">Default content</span>
+      &nbsp;&nbsp;
+      <a href="#" onclick="logout(); return false;" style="color: var(--text-muted); text-decoration: none;">LOGOUT ↗</a>
+    </div>
+  </div>
+
+  <a href="index.html" class="back-link">← View live game</a>
+
+  <h1>Master <span style="color: var(--amber);">View</span></h1>
+  <p class="subtitle">Edit the story, scenarios, and success messages shown to students. Changes save to this browser only — use <strong style="color: var(--amber);">Export</strong> to share or back up, and <strong style="color: var(--amber);">Import</strong> to restore.</p>
+
+  <div class="security-note">
+    <strong>Note:</strong> Changes here only affect this browser. To publish them so all students see them, Export the JSON and replace the <code>DEFAULT_CONTENT</code> section in <code>index.html</code>, then commit to GitHub. Or Import the JSON on each student device.
+  </div>
+
+  <div class="panel">
+    <h2>General</h2>
+
+    <div class="field">
+      <label for="f-caseFile">Welcome — Case File Line</label>
+      <div class="hint">Small orange text above the main title on the welcome screen.</div>
+      <input type="text" id="f-caseFile">
+    </div>
+
+    <div class="field">
+      <label for="f-welcomeLede">Welcome — Mission Description</label>
+      <div class="hint">Main paragraph on the welcome screen.</div>
+      <textarea id="f-welcomeLede" class="large"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="f-briefing">Briefing Text</label>
+      <div class="hint">The typewriter-style briefing after students click "Receive Briefing". Plain text only.</div>
+      <textarea id="f-briefing" class="large"></textarea>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Departments</h2>
+
+    <div class="help-box">
+      <strong>HTML tip:</strong> You can use <code>&lt;strong&gt;text&lt;/strong&gt;</code> inside scenarios to make words bold and orange. Example: <code>Identify the &lt;strong&gt;three practices&lt;/strong&gt; that...</code>
+    </div>
+
+    <div class="room-section">
+      <div class="dept-label">DEPT 01</div>
+      <h3>Governance Chamber</h3>
+      <div class="field"><label>Scenario</label><textarea id="f-r1-scenario" class="large"></textarea></div>
+      <div class="field"><label>Success Message</label><input type="text" id="f-r1-success"></div>
+    </div>
+
+    <div class="room-section">
+      <div class="dept-label">DEPT 02</div>
+      <h3>Marketing Lab</h3>
+      <div class="field"><label>Scenario</label><textarea id="f-r2-scenario" class="large"></textarea></div>
+      <div class="field"><label>Success Message</label><input type="text" id="f-r2-success"></div>
+    </div>
+
+    <div class="room-section">
+      <div class="dept-label">DEPT 03</div>
+      <h3>Environments Control</h3>
+      <div class="field"><label>Scenario</label><textarea id="f-r3-scenario" class="large"></textarea></div>
+      <div class="field"><label>Success Message</label><input type="text" id="f-r3-success"></div>
+    </div>
+
+    <div class="room-section">
+      <div class="dept-label">DEPT 04</div>
+      <h3>Ethics Tribunal</h3>
+      <div class="field"><label>Scenario</label><textarea id="f-r4-scenario" class="large"></textarea></div>
+      <div class="field"><label>Success Message</label><input type="text" id="f-r4-success"></div>
+    </div>
+
+    <div class="room-section">
+      <div class="dept-label">DEPT 05</div>
+      <h3>Human Resources</h3>
+      <div class="field"><label>Scenario</label><textarea id="f-r5-scenario" class="large"></textarea></div>
+      <div class="field"><label>Success Message</label><input type="text" id="f-r5-success"></div>
+    </div>
+
+    <div class="room-section">
+      <div class="dept-label">DEPT 06</div>
+      <h3>Finance Vault</h3>
+      <div class="field"><label>Scenario</label><textarea id="f-r6-scenario" class="large"></textarea></div>
+      <div class="field"><label>Success Message</label><input type="text" id="f-r6-success"></div>
+    </div>
+
+    <div class="room-section">
+      <div class="dept-label">BOARDROOM</div>
+      <h3>Final Vault</h3>
+      <div class="field"><label>Scenario</label><textarea id="f-vaultScenario" class="large"></textarea></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Save & Share</h2>
+    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">
+      <strong style="color: var(--emerald);">Save Changes</strong> stores your edits in this browser so they appear when you open the game next.
+      <strong style="color: var(--amber);">Export</strong> downloads a JSON file you can back up or share.
+      <strong style="color: var(--red);">Reset</strong> restores all defaults.
+    </p>
+
+    <div class="actions-row" style="border-top: none; padding-top: 0; margin-top: 0;">
+      <button class="btn" onclick="saveChanges()">Save Changes</button>
+      <button class="btn btn-ghost" onclick="exportJson()">Export JSON</button>
+      <label class="btn btn-ghost" for="importFile" style="cursor: pointer;">Import JSON</label>
+      <input type="file" id="importFile" accept="application/json" onchange="importJson(event)" style="display:none;">
+      <button class="btn btn-danger" onclick="resetDefaults()">Reset to Defaults</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   PASSWORD — change this to whatever you want.
+   NOTE: This password is visible in the page source. Fine for
+   classroom use, but not real security. GitHub Pages can't
+   hide it because it has no server.
+   ============================================================ */
+const ADMIN_PASSWORD = '98Cricket';
+
+/* Default content — keep in sync with index.html */
+const DEFAULT_CONTENT = {
+  welcomeCaseFile: "Case file #2026-BRM-001",
+  welcomeLede: "A major corporation is hours from collapse. Six departments have failed simultaneously — governance, marketing, operating environment, ethics, human resources, and finance. You have been hired as a junior consultant. Solve each department's crisis to unlock the next, and save the business before the vault seals for good.",
+  briefing: "At 0400 hours this morning, every department of a major regional company went dark at once. The board has retreated. Staff are panicking. Auditors are circling. You have been flown in as a consulting team. Six department crises must be diagnosed in order — governance, marketing, operating environment, ethics, human resources, and finance. Each one yields a code. Assemble all six to reach the boardroom and deliver the final recommendation. Move fast. The vault seals at sundown.",
+  rooms: {
+    room1: { scenario: "The boardroom door is sealed. Five practice reports lie on the table. Identify the <strong>three practices</strong> that reflect <strong>good corporate governance</strong> under the King Code, and the vault keypad will reveal the access code.", success: "Vault keypad unlocked • Code recovered" },
+    room2: { scenario: "A luxury restaurant launched a new campaign and it <strong>collapsed</strong>. Three decisions were disastrous. For each problem, identify which element of the <strong>marketing mix</strong> was mishandled. Get all three right to recover the keyword.", success: "Marketing server restored • Keyword recovered" },
+    room3: { scenario: "The operating environment monitoring system has failed. Nine threats have been detected but they're unclassified. Sort each threat into its correct environment — <strong>Micro, Market, or Macro</strong> — then identify which environment the business has the <strong>least control over</strong>.", success: "Control systems online • Keyword recovered" },
+    room4: { scenario: "Investigators have filed four complaints against the company. For each one, classify it as <strong>Illegal, Unethical only,</strong> or <strong>Both unethical and illegal</strong>. Correct rulings decode the exit keyword.", success: "Compliance cleared • Keyword recovered" },
+    room5: { scenario: "HR is paralysed. Six recruitment steps have been scrambled — no one can be hired until they're restored to the correct sequence. Place each step in the right order using the ↑ ↓ controls, then confirm.", success: "HR systems reopened • Keyword recovered" },
+    room6: { scenario: "The finance vault opens only for consultants who can <strong>interpret</strong> numbers, not just calculate them. Three quick questions. Each correct answer gives a digit of the final vault code.", success: "Treasury access granted • Code recovered" }
+  },
+  vaultScenario: "All six department codes have been recovered. The boardroom door has one last requirement: prove you understand that <strong>no single fix saves a failing business — only an integrated plan does</strong>. Select the strategy that best addresses every department's crisis at once."
+};
+
+function tryLogin() {
+  const val = document.getElementById('pwInput').value;
+  const errEl = document.getElementById('loginError');
+  if (val === ADMIN_PASSWORD) {
+    sessionStorage.setItem('adminAuth', '1');
+    showAdmin();
+  } else {
+    errEl.textContent = '✗ Incorrect password';
+    document.getElementById('pwInput').value = '';
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+function showAdmin() {
+  document.getElementById('loginWrap').classList.add('hidden');
+  document.getElementById('adminWrap').classList.remove('hidden');
+  loadFields();
+}
+
+function logout() {
+  sessionStorage.removeItem('adminAuth');
+  location.reload();
+}
+
+function getCurrentContent() {
+  try {
+    const saved = localStorage.getItem('escapeRoomContent');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { ...DEFAULT_CONTENT, ...parsed, rooms: { ...DEFAULT_CONTENT.rooms, ...(parsed.rooms || {}) } };
+    }
+  } catch (e) { console.warn(e); }
+  return DEFAULT_CONTENT;
+}
+
+function loadFields() {
+  const c = getCurrentContent();
+  document.getElementById('f-caseFile').value = c.welcomeCaseFile;
+  document.getElementById('f-welcomeLede').value = c.welcomeLede;
+  document.getElementById('f-briefing').value = c.briefing;
+  for (let i = 1; i <= 6; i++) {
+    document.getElementById('f-r' + i + '-scenario').value = c.rooms['room' + i].scenario;
+    document.getElementById('f-r' + i + '-success').value = c.rooms['room' + i].success;
+  }
+  document.getElementById('f-vaultScenario').value = c.vaultScenario;
+  updateSavedIndicator();
+}
+
+function collectFields() {
+  return {
+    welcomeCaseFile: document.getElementById('f-caseFile').value,
+    welcomeLede: document.getElementById('f-welcomeLede').value,
+    briefing: document.getElementById('f-briefing').value,
+    rooms: {
+      room1: { scenario: document.getElementById('f-r1-scenario').value, success: document.getElementById('f-r1-success').value },
+      room2: { scenario: document.getElementById('f-r2-scenario').value, success: document.getElementById('f-r2-success').value },
+      room3: { scenario: document.getElementById('f-r3-scenario').value, success: document.getElementById('f-r3-success').value },
+      room4: { scenario: document.getElementById('f-r4-scenario').value, success: document.getElementById('f-r4-success').value },
+      room5: { scenario: document.getElementById('f-r5-scenario').value, success: document.getElementById('f-r5-success').value },
+      room6: { scenario: document.getElementById('f-r6-scenario').value, success: document.getElementById('f-r6-success').value }
+    },
+    vaultScenario: document.getElementById('f-vaultScenario').value
+  };
+}
+
+function saveChanges() {
+  try {
+    localStorage.setItem('escapeRoomContent', JSON.stringify(collectFields()));
+    toast('✓ Changes saved to this browser');
+    updateSavedIndicator();
+  } catch (e) { toast('✗ Save failed: ' + e.message, true); }
+}
+
+function exportJson() {
+  const blob = new Blob([JSON.stringify(collectFields(), null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'business-rescue-content.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('✓ Exported business-rescue-content.json');
+}
+
+function importJson(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.rooms || !data.rooms.room1) throw new Error('Invalid content file');
+      localStorage.setItem('escapeRoomContent', JSON.stringify(data));
+      loadFields();
+      toast('✓ Imported and saved');
+    } catch (err) { toast('✗ Import failed: ' + err.message, true); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function resetDefaults() {
+  if (!confirm('Reset all content to factory defaults? Your current edits will be lost (unless you exported them).')) return;
+  localStorage.removeItem('escapeRoomContent');
+  loadFields();
+  toast('✓ Content reset to defaults');
+}
+
+function updateSavedIndicator() {
+  const saved = localStorage.getItem('escapeRoomContent');
+  const el = document.getElementById('savedIndicator');
+  if (saved) { el.textContent = 'Custom content saved'; el.classList.add('modified'); }
+  else { el.textContent = 'Default content'; el.classList.remove('modified'); }
+}
+
+let toastTimer = null;
+function toast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('err', !!isError);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+if (sessionStorage.getItem('adminAuth') === '1') showAdmin();
+</script>
+</body>
+</html>
