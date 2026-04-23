@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Business Rescue Mission — Classified Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THEME TOKENS — change these to re-skin the whole experience.
+     ============================================================ */
+  :root {
+    --ink: #0B0E17;
+    --ink-2: #111622;
+    --surface: #161C2B;
+    --surface-2: #1E2638;
+    --border: #2A3244;
+    --border-strong: #3D4860;
+    --text: #E8EAED;
+    --text-muted: #8B92A7;
+    --text-dim: #5A6478;
+    --amber: #F5A623;
+    --amber-glow: rgba(245, 166, 35, 0.35);
+    --emerald: #10B981;
+    --emerald-glow: rgba(16, 185, 129, 0.35);
+    --red: #EF4444;
+    --red-glow: rgba(239, 68, 68, 0.35);
+    --cyan: #22D3EE;
+
+    --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
+    --font-body: 'Lora', Georgia, serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { min-height: 100vh; }
+
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* Blueprint grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(42, 50, 68, 0.25) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(42, 50, 68, 0.25) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
+  }
+
+  /* Subtle noise */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* ============================================================
+     HUD — persistent top bar with evidence tracker and timer
+     ============================================================ */
+  .hud {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(11, 14, 23, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 50;
+    padding: 12px 24px;
+  }
+
+  .hud-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .hud-brand {
+    font-family: var(--font-display);
+    font-size: 20px;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hud-brand .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 12px var(--amber-glow);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  .evidence-tracker {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .evidence-pip {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-dim);
+    background: var(--ink-2);
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+  }
+
+  .evidence-pip.unlocked {
+    color: var(--emerald);
+    border-color: var(--emerald);
+    background: rgba(16, 185, 129, 0.08);
+    box-shadow: 0 0 12px var(--emerald-glow);
+  }
+
+  .timer {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ============================================================
+     LAYOUT
+     ============================================================ */
+  main {
+    position: relative;
+    z-index: 2;
+    padding: 120px 24px 48px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .screen { display: none; animation: fadeUp 0.6s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h1.title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 9vw, 104px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+
+  h1.title .accent { color: var(--amber); font-style: italic; }
+
+  h2.room-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 64px);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  h3.section-heading {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    color: var(--amber);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  p.lede {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 65ch;
+    margin-bottom: 32px;
+  }
+
+  .mono { font-family: var(--font-mono); }
+
+  /* ============================================================
+     PANELS — consistent look for room content
+     ============================================================ */
+  .panel {
+    background: linear-gradient(180deg, var(--surface) 0%, var(--ink-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    opacity: 0.6;
+  }
+
+  .scenario {
+    background: var(--ink-2);
+    border-left: 3px solid var(--amber);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    font-style: italic;
+    color: var(--text);
+  }
+
+  .scenario strong { color: var(--amber); font-style: normal; font-weight: 600; }
+
+  /* ============================================================
+     BUTTONS
+     ============================================================ */
+  .btn {
+    font-family: var(--font-display);
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    padding: 14px 32px;
+    background: var(--amber);
+    color: var(--ink);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:hover {
+    background: #FFB93A;
+    box-shadow: 0 0 24px var(--amber-glow);
+    transform: translateY(-1px);
+  }
+
+  .btn:active { transform: translateY(0); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+
+  .btn-ghost:hover {
+    background: var(--surface-2);
+    border-color: var(--amber);
+    color: var(--amber);
+    box-shadow: none;
+  }
+
+  .btn-small {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn:disabled:hover {
+    transform: none;
+    background: var(--amber);
+    box-shadow: none;
+  }
+
+  /* ============================================================
+     SELECTABLE CARDS (Room 1, Room 4)
+     ============================================================ */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  @media (min-width: 700px) {
+    .card-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .select-card {
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    color: var(--text);
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    width: 100%;
+  }
+
+  .select-card:hover {
+    border-color: var(--amber);
+    background: var(--surface-2);
+  }
+
+  .select-card.selected {
+    border-color: var(--amber);
+    background: rgba(245, 166, 35, 0.08);
+    box-shadow: inset 0 0 0 1px var(--amber);
+  }
+
+  .select-card .checkbox {
+    width: 20px; height: 20px; flex-shrink: 0;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 2px;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--ink);
+    transition: all 0.2s ease;
+  }
+
+  .select-card.selected .checkbox {
+    background: var(--amber);
+    border-color: var(--amber);
+  }
+
+  .select-card.selected .checkbox::after { content: '✓'; }
+
+  /* ============================================================
+     DROPDOWN QUESTIONS (Room 2, Room 3, Room 4)
+     ============================================================ */
+  .q-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .q-row:last-child { border-bottom: none; }
+
+  .q-text {
+    color: var(--text);
+    font-size: 15px;
+  }
+
+  .q-text em { color: var(--amber); font-style: normal; font-weight: 600; }
+
+  select {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--ink-2);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    padding: 10px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    width: 100%;
+    max-width: 360px;
+    transition: border-color 0.2s ease;
+  }
+
+  select:hover, select:focus {
+    border-color: var(--amber);
+    outline: none;
+  }
+
+  /* ============================================================
+     TEXT INPUTS
+     ============================================================ */
+  input[type="text"], input[type="number"] {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    background: var(--ink);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    padding: 12px 16px;
+    border-radius: 2px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+    max-width: 260px;
+    transition: all 0.2s ease;
+  }
+
+  input[type="text"]:focus, input[type="number"]:focus {
+    border-color: var(--amber);
+    outline: none;
+    box-shadow: 0 0 16px var(--amber-glow);
+  }
+
+  /* ============================================================
+     FEEDBACK
+     ============================================================ */
+  .feedback {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    display: none;
+  }
+
+  .feedback.show { display: block; animation: shake 0.4s ease; }
+
+  .feedback.correct {
+    color: var(--emerald);
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid var(--emerald);
+    animation: glow 0.6s ease;
+  }
+
+  .feedback.incorrect {
+    color: var(--red);
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid var(--red);
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 0 var(--emerald-glow); }
+    50% { box-shadow: 0 0 32px var(--emerald-glow); }
+  }
+
+  /* ============================================================
+     UNLOCKED CODE REVEAL
+     ============================================================ */
+  .unlock-reveal {
+    text-align: center;
+    padding: 32px 16px;
+    background: var(--ink-2);
+    border: 1px dashed var(--emerald);
+    border-radius: 4px;
+    margin: 24px 0;
+    display: none;
+  }
+
+  .unlock-reveal.show { display: block; animation: fadeUp 0.6s ease; }
+
+  .unlock-reveal .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--emerald);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .unlock-reveal .code {
+    font-family: var(--font-mono);
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--emerald);
+    text-shadow: 0 0 24px var(--emerald-glow);
+  }
+
+  /* ============================================================
+     ORDERING LIST (Room 5)
+     ============================================================ */
+  .order-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .order-item {
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 2px;
+    color: var(--text);
+  }
+
+  .order-item .num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--amber);
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .order-item .label { flex: 1; }
+
+  .order-item .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .order-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 30px;
+    height: 22px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+  }
+
+  .order-btn:hover:not(:disabled) {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+
+  .order-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ============================================================
+     WELCOME & BRIEFING
+     ============================================================ */
+  .hero {
+    text-align: left;
+    padding: 40px 0;
+  }
+
+  .hero .meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin: 32px 0;
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .meta-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .meta-item strong {
+    display: block;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: normal;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .classified-stamp {
+    display: inline-block;
+    border: 2px solid var(--red);
+    color: var(--red);
+    padding: 4px 12px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    transform: rotate(-2deg);
+    margin-bottom: 32px;
+    opacity: 0.85;
+  }
+
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 24px 0 32px;
+  }
+
+  @media (min-width: 700px) {
+    .rules-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  .rule-card {
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: 4px;
+  }
+
+  .rule-card .num {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .rule-card .txt {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* ============================================================
+     VAULT — final synthesis screen
+     ============================================================ */
+  .vault-codes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .vault-code-slot {
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    padding: 14px;
+    text-align: center;
+    border-radius: 2px;
+  }
+
+  .vault-code-slot .lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .vault-code-slot .val {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    color: var(--emerald);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* ============================================================
+     SUCCESS SCREEN
+     ============================================================ */
+  .success-hero {
+    text-align: center;
+    padding: 40px 0;
+  }
+
+  .success-hero .big {
+    font-family: var(--font-display);
+    font-size: clamp(60px, 12vw, 140px);
+    line-height: 0.9;
+    color: var(--emerald);
+    text-shadow: 0 0 32px var(--emerald-glow);
+    margin-bottom: 16px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+  }
+
+  .stat {
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    padding: 20px;
+    text-align: center;
+    border-radius: 4px;
+  }
+
+  .stat .val {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat .lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     NAV BUTTONS
+     ============================================================ */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  /* ============================================================
+     UTILITY
+     ============================================================ */
+  .hidden { display: none !important; }
+
+  .room-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .room-number {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--amber);
+    letter-spacing: 0.3em;
+    padding: 4px 10px;
+    border: 1px solid var(--amber);
+    border-radius: 2px;
+  }
+
+  .typing {
+    border-right: 2px solid var(--amber);
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { border-color: transparent; }
+  }
+
+  /* ============================================================
+     SYNTHESIS (final vault) OPTIONS
+     ============================================================ */
+  .option-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .option-btn {
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 2px;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+  }
+
+  .option-btn:hover {
+    border-color: var(--amber);
+    background: var(--surface-2);
+  }
+
+  .option-btn.selected {
+    border-color: var(--amber);
+    background: rgba(245, 166, 35, 0.08);
+    box-shadow: inset 0 0 0 1px var(--amber);
+  }
+
+  .option-btn .letter {
+    font-family: var(--font-mono);
+    color: var(--amber);
+    margin-right: 12px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HUD
+     ============================================================ -->
+<nav class="hud">
+  <div class="hud-inner">
+    <div class="hud-brand">
+      <span class="dot"></span>
+      <span>OPERATION&nbsp;/&nbsp;RESCUE</span>
+    </div>
+    <div class="evidence-tracker" id="evidenceTracker">
+      <span class="evidence-pip" data-key="governance">01&nbsp;GOV</span>
+      <span class="evidence-pip" data-key="marketing">02&nbsp;MKT</span>
+      <span class="evidence-pip" data-key="environment">03&nbsp;ENV</span>
+      <span class="evidence-pip" data-key="ethics">04&nbsp;ETH</span>
+      <span class="evidence-pip" data-key="hr">05&nbsp;HR</span>
+      <span class="evidence-pip" data-key="finance">06&nbsp;FIN</span>
+    </div>
+    <div class="timer" id="timer">00:00</div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============================================================
+     WELCOME SCREEN
+     ============================================================ -->
+<section class="screen active" id="screen-welcome">
+  <div class="hero">
+    <div class="classified-stamp">TOP SECRET // CONFIDENTIAL</div>
+    <div class="eyebrow">Case file #2026-BRM-001</div>
+    <h1 class="title">The Business<br><span class="accent">Rescue</span> Mission</h1>
+    <p class="lede">A major corporation is hours from collapse. Six departments have failed simultaneously — governance, marketing, operating environment, ethics, human resources, and finance. You have been hired as a junior consultant. Solve each department's crisis to unlock the next, and save the business before the vault seals for good.</p>
+    <div class="meta">
+      <div class="meta-item"><strong>6</strong>DEPARTMENTS</div>
+      <div class="meta-item"><strong>45 MIN</strong>RECOMMENDED</div>
+      <div class="meta-item"><strong>3–7</strong>CONSULTANTS</div>
+      <div class="meta-item"><strong>GR 10–12</strong>BUSINESS STUDIES</div>
+    </div>
+    <button class="btn" onclick="go('briefing')">Receive Briefing →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     BRIEFING
+     ============================================================ -->
+<section class="screen" id="screen-briefing">
+  <div class="eyebrow">Mission Briefing</div>
+  <h2 class="room-title">Your Assignment</h2>
+  <p class="lede" id="briefingText"></p>
+
+  <h3 class="section-heading">Rules of Engagement</h3>
+  <div class="rules-grid">
+    <div class="rule-card">
+      <div class="num">01</div>
+      <div class="txt">Each department hides a code or keyword. Collect all six to open the final vault.</div>
+    </div>
+    <div class="rule-card">
+      <div class="num">02</div>
+      <div class="txt">Wrong answers don't penalise you — try again, discuss with your team, reason it out.</div>
+    </div>
+    <div class="rule-card">
+      <div class="num">03</div>
+      <div class="txt">Use the Business Studies you already know. Every puzzle maps to curriculum content.</div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-ghost btn btn-small" onclick="go('welcome')">← Back</button>
+    <button class="btn" onclick="startMission()">Begin Mission →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROOM 1 — CORPORATE GOVERNANCE CHAMBER
+     ============================================================ -->
+<section class="screen" id="screen-room1">
+  <div class="room-header">
+    <span class="room-number">DEPT 01</span>
+    <h2 class="room-title">Governance Chamber</h2>
+  </div>
+
+  <div class="scenario">
+    The boardroom door is sealed. Five practice reports lie on the table. Identify the <strong>three practices</strong> that reflect <strong>good corporate governance</strong> under the King Code, and the vault keypad will reveal the access code.
+  </div>
+
+  <div class="panel">
+    <h3 class="section-heading">Board Practice Files</h3>
+    <div class="card-grid" id="govCards">
+      <button class="select-card" data-id="a" data-correct="false">
+        <span class="checkbox"></span>
+        <span>The CEO makes all financial decisions alone and does not report to shareholders.</span>
+      </button>
+      <button class="select-card" data-id="b" data-correct="true" data-digit="4">
+        <span class="checkbox"></span>
+        <span>The company publishes truthful, audited annual reports to all stakeholders.</span>
+      </button>
+      <button class="select-card" data-id="c" data-correct="true" data-digit="7">
+        <span class="checkbox"></span>
+        <span>Independent non-executive directors are appointed to strengthen oversight of the board.</span>
+      </button>
+      <button class="select-card" data-id="d" data-correct="false">
+        <span class="checkbox"></span>
+        <span>Managers hide environmental damage caused by operations from the public.</span>
+      </button>
+      <button class="select-card" data-id="e" data-correct="true" data-digit="2">
+        <span class="checkbox"></span>
+        <span>The board acts with accountability and responsibility toward all shareholders.</span>
+      </button>
+    </div>
+
+    <button class="btn" onclick="checkRoom1()">Verify Selection</button>
+    <div class="feedback" id="room1fb"></div>
+
+    <div class="unlock-reveal" id="room1unlock">
+      <div class="label">Vault keypad unlocked • Code recovered</div>
+      <div class="code">4 7 2</div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-ghost btn btn-small" onclick="go('briefing')">← Briefing</button>
+    <button class="btn" id="room1next" disabled onclick="go('room2')">Next: Marketing Lab →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROOM 2 — MARKETING LAB
+     ============================================================ -->
+<section class="screen" id="screen-room2">
+  <div class="room-header">
+    <span class="room-number">DEPT 02</span>
+    <h2 class="room-title">Marketing Lab</h2>
+  </div>
+
+  <div class="scenario">
+    A luxury restaurant launched a new campaign and it <strong>collapsed</strong>. Three decisions were disastrous. For each problem, identify which element of the <strong>marketing mix</strong> was mishandled. Get all three right to recover the keyword.
+  </div>
+
+  <div class="panel">
+    <h3 class="section-heading">Campaign Post-Mortem</h3>
+
+    <div class="q-row">
+      <div class="q-text"><em>Problem A.</em> The restaurant targets wealthy adults but advertised on a children's cartoon channel.</div>
+      <select data-q="a" data-answer="promotion">
+        <option value="">— select the failing element —</option>
+        <option value="product">Product</option>
+        <option value="price">Price</option>
+        <option value="place">Place</option>
+        <option value="promotion">Promotion</option>
+      </select>
+    </div>
+
+    <div class="q-row">
+      <div class="q-text"><em>Problem B.</em> The restaurant is positioned as high-end but ran a "two-rand combo meal" special.</div>
+      <select data-q="b" data-answer="price">
+        <option value="">— select the failing element —</option>
+        <option value="product">Product</option>
+        <option value="price">Price</option>
+        <option value="place">Place</option>
+        <option value="promotion">Promotion</option>
+      </select>
+    </div>
+
+    <div class="q-row">
+      <div class="q-text"><em>Problem C.</em> The fine-dining menu is printed on flimsy, stained photocopy paper.</div>
+      <select data-q="c" data-answer="product">
+        <option value="">— select the failing element —</option>
+        <option value="product">Product</option>
+        <option value="price">Price</option>
+        <option value="place">Place</option>
+        <option value="promotion">Promotion</option>
+      </select>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn" onclick="checkRoom2()">Diagnose Campaign</button>
+    </div>
+    <div class="feedback" id="room2fb"></div>
+
+    <div class="unlock-reveal" id="room2unlock">
+      <div class="label">Marketing server restored • Keyword recovered</div>
+      <div class="code">M I X</div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-ghost btn btn-small" onclick="go('room1')">← Previous</button>
+    <button class="btn" id="room2next" disabled onclick="go('room3')">Next: Environments Control →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROOM 3 — BUSINESS ENVIRONMENTS CONTROL ROOM
+     ============================================================ -->
+<section class="screen" id="screen-room3">
+  <div class="room-header">
+    <span class="room-number">DEPT 03</span>
+    <h2 class="room-title">Environments Control</h2>
+  </div>
+
+  <div class="scenario">
+    The operating environment monitoring system has failed. Nine threats have been detected but they're unclassified. Sort each threat into its correct environment — <strong>Micro, Market, or Macro</strong> — then identify which environment the business has the <strong>least control over</strong>.
+  </div>
+
+  <div class="panel">
+    <h3 class="section-heading">Threat Classification</h3>
+
+    <div class="q-row">
+      <div class="q-text"><em>1.</em> Unreliable employees affecting daily productivity.</div>
+      <select data-env-answer="micro">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>2.</em> A new competitor has opened two blocks away.</div>
+      <select data-env-answer="market">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>3.</em> Inflation has risen sharply this quarter.</div>
+      <select data-env-answer="macro">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>4.</em> A key supplier is repeatedly delaying stock deliveries.</div>
+      <select data-env-answer="market">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>5.</em> Poor management decisions have hurt morale.</div>
+      <select data-env-answer="micro">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>6.</em> The Reserve Bank has raised interest rates.</div>
+      <select data-env-answer="macro">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>7.</em> Customer tastes have shifted to healthier options.</div>
+      <select data-env-answer="market">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>8.</em> Production equipment is outdated and breaking down.</div>
+      <select data-env-answer="micro">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>9.</em> New national labour legislation has been passed.</div>
+      <select data-env-answer="macro">
+        <option value="">— environment —</option>
+        <option value="micro">Micro</option>
+        <option value="market">Market</option>
+        <option value="macro">Macro</option>
+      </select>
+    </div>
+
+    <div class="q-row" style="border-top: 1px solid var(--amber); margin-top: 16px; padding-top: 20px;">
+      <div class="q-text"><em>Final question.</em> Which environment has the business the <strong>least</strong> control over?</div>
+      <input type="text" id="room3final" placeholder="ENVIRONMENT" maxlength="10" style="max-width:220px;">
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn" onclick="checkRoom3()">Stabilise Environment</button>
+    </div>
+    <div class="feedback" id="room3fb"></div>
+
+    <div class="unlock-reveal" id="room3unlock">
+      <div class="label">Control systems online • Keyword recovered</div>
+      <div class="code">M A C R O</div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-ghost btn btn-small" onclick="go('room2')">← Previous</button>
+    <button class="btn" id="room3next" disabled onclick="go('room4')">Next: Ethics Tribunal →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROOM 4 — ETHICS & LEGISLATION TRIBUNAL
+     ============================================================ -->
+<section class="screen" id="screen-room4">
+  <div class="room-header">
+    <span class="room-number">DEPT 04</span>
+    <h2 class="room-title">Ethics Tribunal</h2>
+  </div>
+
+  <div class="scenario">
+    Investigators have filed four complaints against the company. For each one, classify it as <strong>Illegal, Unethical only,</strong> or <strong>Both unethical and illegal</strong>. Correct rulings decode the exit keyword.
+  </div>
+
+  <div class="panel">
+    <h3 class="section-heading">Case Files</h3>
+
+    <div class="q-row">
+      <div class="q-text"><em>Case 1.</em> A restaurant advertises a meal as beef but serves cheaper horse meat in its place.</div>
+      <select data-eth-answer="both">
+        <option value="">— your ruling —</option>
+        <option value="illegal">Illegal only</option>
+        <option value="unethical">Unethical only</option>
+        <option value="both">Both unethical and illegal</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>Case 2.</em> A worker is forced to work overtime without being paid the required overtime rate.</div>
+      <select data-eth-answer="both">
+        <option value="">— your ruling —</option>
+        <option value="illegal">Illegal only</option>
+        <option value="unethical">Unethical only</option>
+        <option value="both">Both unethical and illegal</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>Case 3.</em> A manager is consistently rude to junior staff but does not break a written law.</div>
+      <select data-eth-answer="unethical">
+        <option value="">— your ruling —</option>
+        <option value="illegal">Illegal only</option>
+        <option value="unethical">Unethical only</option>
+        <option value="both">Both unethical and illegal</option>
+      </select>
+    </div>
+    <div class="q-row">
+      <div class="q-text"><em>Case 4.</em> Expiry dates are deliberately hidden from consumers on food packaging.</div>
+      <select data-eth-answer="both">
+        <option value="">— your ruling —</option>
+        <option value="illegal">Illegal only</option>
+        <option value="unethical">Unethical only</option>
+        <option value="both">Both unethical and illegal</option>
+      </select>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn" onclick="checkRoom4()">Issue Ruling</button>
+    </div>
+    <div class="feedback" id="room4fb"></div>
+
+    <div class="unlock-reveal" id="room4unlock">
+      <div class="label">Compliance cleared • Keyword recovered</div>
+      <div class="code">L A W</div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-ghost btn btn-small" onclick="go('room3')">← Previous</button>
+    <button class="btn" id="room4next" disabled onclick="go('room5')">Next: HR Office →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROOM 5 — HR OFFICE
+     ============================================================ -->
+<section class="screen" id="screen-room5">
+  <div class="room-header">
+    <span class="room-number">DEPT 05</span>
+    <h2 class="room-title">Human Resources</h2>
+  </div>
+
+  <div class="scenario">
+    HR is paralysed. Six recruitment steps have been scrambled — no one can be hired until they're restored to the correct sequence. Place each step in the right order using the ↑ ↓ controls, then confirm.
+  </div>
+
+  <div class="panel">
+    <h3 class="section-heading">Recruitment & Selection Sequence</h3>
+    <ol class="order-list" id="hrList">
+      <!-- items injected by JS -->
+    </ol>
+    <button class="btn" onclick="checkRoom5()">Confirm Sequence</button>
+    <div class="feedback" id="room5fb"></div>
+
+    <div class="unlock-reveal" id="room5unlock">
+      <div class="label">HR systems reopened • Keyword recovered</div>
+      <div class="code">H I R E M E</div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-ghost btn btn-small" onclick="go('room4')">← Previous</button>
+    <button class="btn" id="room5next" disabled onclick="go('room6')">Next: Finance Vault →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROOM 6 — FINANCE VAULT
+     ============================================================ -->
+<section class="screen" id="screen-room6">
+  <div class="room-header">
+    <span class="room-number">DEPT 06</span>
+    <h2 class="room-title">Finance Vault</h2>
+  </div>
+
+  <div class="scenario">
+    The finance vault opens only for consultants who can <strong>interpret</strong> numbers, not just calculate them. Three quick questions. Each correct answer gives a digit of the final vault code.
+  </div>
+
+  <div class="panel">
+    <h3 class="section-heading">Financial Interpretation</h3>
+
+    <div class="q-row">
+      <div class="q-text"><em>Q1.</em> Current assets = R60 000. Current liabilities = R30 000. Calculate the <strong>current ratio</strong> (in the form X:1). What is X?</div>
+      <input type="number" id="fin1" placeholder="X" min="0" max="9" style="max-width:120px;">
+    </div>
+
+    <div class="q-row">
+      <div class="q-text"><em>Q2.</em> Gross profit has increased from R100 000 to R180 000. Pick the <strong>digit</strong> that matches how this impacts profitability.</div>
+      <select id="fin2" data-answer="8">
+        <option value="">— select interpretation —</option>
+        <option value="0">Profitability declined (0)</option>
+        <option value="4">Profitability stayed flat (4)</option>
+        <option value="8">Profitability improved significantly (8)</option>
+      </select>
+    </div>
+
+    <div class="q-row">
+      <div class="q-text"><em>Q3.</em> Operating expenses have doubled while sales stayed the same. Pick the <strong>digit</strong> that matches the likely outcome.</div>
+      <select id="fin3" data-answer="4">
+        <option value="">— select interpretation —</option>
+        <option value="2">Higher net profit (2)</option>
+        <option value="4">Lower net profit (4)</option>
+        <option value="6">No effect on net profit (6)</option>
+      </select>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn" onclick="checkRoom6()">Open the Vault</button>
+    </div>
+    <div class="feedback" id="room6fb"></div>
+
+    <div class="unlock-reveal" id="room6unlock">
+      <div class="label">Treasury access granted • Code recovered</div>
+      <div class="code">2 8 4</div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-ghost btn btn-small" onclick="go('room5')">← Previous</button>
+    <button class="btn" id="room6next" disabled onclick="go('vault')">Enter Final Vault →</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     FINAL VAULT — SYNTHESIS
+     ============================================================ -->
+<section class="screen" id="screen-vault">
+  <div class="room-header">
+    <span class="room-number">BOARDROOM</span>
+    <h2 class="room-title">The Final Vault</h2>
+  </div>
+
+  <div class="scenario">
+    All six department codes have been recovered. The boardroom door has one last requirement: prove you understand that <strong>no single fix saves a failing business — only an integrated plan does</strong>. Select the strategy that best addresses every department's crisis at once.
+  </div>
+
+  <div class="panel">
+    <h3 class="section-heading">Evidence Collected</h3>
+    <div class="vault-codes">
+      <div class="vault-code-slot"><div class="lbl">GOVERNANCE</div><div class="val">472</div></div>
+      <div class="vault-code-slot"><div class="lbl">MARKETING</div><div class="val">MIX</div></div>
+      <div class="vault-code-slot"><div class="lbl">ENVIRONMENT</div><div class="val">MACRO</div></div>
+      <div class="vault-code-slot"><div class="lbl">ETHICS</div><div class="val">LAW</div></div>
+      <div class="vault-code-slot"><div class="lbl">HR</div><div class="val">HIREME</div></div>
+      <div class="vault-code-slot"><div class="lbl">FINANCE</div><div class="val">284</div></div>
+    </div>
+
+    <h3 class="section-heading">Final Decision</h3>
+    <p style="color: var(--text-muted); margin-bottom: 8px;">The business suffers from weak governance, failing marketing, HR breakdown, legal exposure, and financial pressure. Which action plan best saves the company?</p>
+
+    <div class="option-stack" id="vaultOptions">
+      <button class="option-btn" data-correct="false">
+        <span class="letter">A.</span> Fire all underperforming staff, run an aggressive discount campaign, and ignore compliance issues until the balance sheet recovers.
+      </button>
+      <button class="option-btn" data-correct="false">
+        <span class="letter">B.</span> Focus only on cutting costs across every department — governance, marketing, HR, and ethics can be dealt with later once finances improve.
+      </button>
+      <button class="option-btn" data-correct="true">
+        <span class="letter">C.</span> Strengthen board oversight, fix the marketing mix around the real target market, re-align HR processes, ensure legal and ethical compliance, and use financial ratios to guide every decision — as one integrated plan.
+      </button>
+      <button class="option-btn" data-correct="false">
+        <span class="letter">D.</span> Outsource every function to external consultants so internal management no longer has to make decisions.
+      </button>
+    </div>
+
+    <button class="btn" onclick="checkVault()">Save the Business</button>
+    <div class="feedback" id="vaultfb"></div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-ghost btn btn-small" onclick="go('room6')">← Previous</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     SUCCESS
+     ============================================================ -->
+<section class="screen" id="screen-success">
+  <div class="success-hero">
+    <div class="classified-stamp" style="border-color: var(--emerald); color: var(--emerald);">CASE CLOSED</div>
+    <div class="big">MISSION<br>COMPLETE</div>
+    <p class="lede" style="margin: 0 auto 32px;">The business has been saved. The board has approved every recommendation. Your consulting fee is in the post.</p>
+
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="val" id="finalTime">00:00</div>
+        <div class="lbl">Time Elapsed</div>
+      </div>
+      <div class="stat">
+        <div class="val">6/6</div>
+        <div class="lbl">Departments Saved</div>
+      </div>
+      <div class="stat">
+        <div class="val" id="finalAttempts">0</div>
+        <div class="lbl">Total Attempts</div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="restart()">New Mission →</button>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============================================================
+   GAME STATE
+   ============================================================ */
+const state = {
+  current: 'welcome',
+  started: null,
+  attempts: 0,
+  evidence: {
+    governance: null,
+    marketing: null,
+    environment: null,
+    ethics: null,
+    hr: null,
+    finance: null
+  }
+};
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function go(screenName) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + screenName);
+  if (target) {
+    target.classList.add('active');
+    state.current = screenName;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+/* ============================================================
+   TIMER & EVIDENCE TRACKER
+   ============================================================ */
+function updateTimer() {
+  if (!state.started) return;
+  const elapsed = Math.floor((Date.now() - state.started) / 1000);
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('timer').textContent = m + ':' + s;
+}
+setInterval(updateTimer, 1000);
+
+function markEvidence(key, code) {
+  state.evidence[key] = code;
+  const pip = document.querySelector('.evidence-pip[data-key="' + key + '"]');
+  if (pip) pip.classList.add('unlocked');
+}
+
+/* ============================================================
+   START / RESTART
+   ============================================================ */
+function startMission() {
+  state.started = Date.now();
+  state.attempts = 0;
+  go('room1');
+}
+
+function restart() {
+  // reset everything
+  state.started = null;
+  state.attempts = 0;
+  Object.keys(state.evidence).forEach(k => state.evidence[k] = null);
+  document.querySelectorAll('.evidence-pip').forEach(p => p.classList.remove('unlocked'));
+  document.getElementById('timer').textContent = '00:00';
+
+  // reset inputs & visuals
+  document.querySelectorAll('.select-card.selected').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('select').forEach(s => s.value = '');
+  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(i => i.value = '');
+  document.querySelectorAll('.feedback').forEach(f => { f.classList.remove('show', 'correct', 'incorrect'); f.textContent = ''; });
+  document.querySelectorAll('.unlock-reveal').forEach(u => u.classList.remove('show'));
+  document.querySelectorAll('[id$="next"]').forEach(b => { if (b.tagName === 'BUTTON') b.disabled = true; });
+  document.querySelectorAll('.option-btn.selected').forEach(o => o.classList.remove('selected'));
+  buildHRList();
+  go('welcome');
+}
+
+/* ============================================================
+   FEEDBACK HELPER
+   ============================================================ */
+function showFeedback(id, correct, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.remove('correct', 'incorrect');
+  el.classList.add('show', correct ? 'correct' : 'incorrect');
+  state.attempts++;
+}
+
+function unlockRoom(roomId, key, code) {
+  document.getElementById(roomId + 'unlock').classList.add('show');
+  document.getElementById(roomId + 'next').disabled = false;
+  markEvidence(key, code);
+}
+
+/* ============================================================
+   BRIEFING TEXT (typewriter)
+   ============================================================ */
+const briefingText = "At 0400 hours this morning, every department of a major regional company went dark at once. The board has retreated. Staff are panicking. Auditors are circling. You have been flown in as a consulting team. Six department crises must be diagnosed in order — governance, marketing, operating environment, ethics, human resources, and finance. Each one yields a code. Assemble all six to reach the boardroom and deliver the final recommendation. Move fast. The vault seals at sundown.";
+
+function typewriter(el, text, speed = 18) {
+  el.textContent = '';
+  el.classList.add('typing');
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i < text.length) {
+      el.textContent += text[i++];
+    } else {
+      clearInterval(iv);
+      el.classList.remove('typing');
+    }
+  }, speed);
+}
+
+/* ============================================================
+   ROOM 1 — GOVERNANCE
+   ============================================================ */
+document.querySelectorAll('#govCards .select-card').forEach(card => {
+  card.addEventListener('click', () => {
+    card.classList.toggle('selected');
+  });
+});
+
+function checkRoom1() {
+  const selected = document.querySelectorAll('#govCards .select-card.selected');
+  const allCards = document.querySelectorAll('#govCards .select-card');
+  const correctIds = [];
+  let allCorrect = true;
+  allCards.forEach(c => {
+    const isCorrect = c.dataset.correct === 'true';
+    const isSelected = c.classList.contains('selected');
+    if (isCorrect !== isSelected) allCorrect = false;
+    if (isCorrect) correctIds.push(c.dataset.id);
+  });
+
+  if (allCorrect && selected.length === 3) {
+    showFeedback('room1fb', true, '✓ Board practices verified. Access code extracted.');
+    unlockRoom('room1', 'governance', '472');
+  } else if (selected.length !== 3) {
+    showFeedback('room1fb', false, '✗ Good corporate governance shows in exactly three of these practices — no more, no less.');
+  } else {
+    showFeedback('room1fb', false, '✗ One or more selections do not reflect good governance. Review each practice carefully.');
+  }
+}
+
+/* ============================================================
+   ROOM 2 — MARKETING
+   ============================================================ */
+function checkRoom2() {
+  const selects = document.querySelectorAll('#screen-room2 select[data-q]');
+  let allCorrect = true;
+  let anyBlank = false;
+  selects.forEach(s => {
+    if (!s.value) anyBlank = true;
+    if (s.value !== s.dataset.answer) allCorrect = false;
+  });
+
+  if (anyBlank) {
+    showFeedback('room2fb', false, '✗ Diagnose all three problems before submitting.');
+  } else if (allCorrect) {
+    showFeedback('room2fb', true, '✓ Campaign diagnosis correct. Marketing server rebooting.');
+    unlockRoom('room2', 'marketing', 'MIX');
+  } else {
+    showFeedback('room2fb', false, '✗ At least one diagnosis is wrong. Re-examine the marketing mix — which element controls each decision?');
+  }
+}
+
+/* ============================================================
+   ROOM 3 — ENVIRONMENTS
+   ============================================================ */
+function checkRoom3() {
+  const selects = document.querySelectorAll('#screen-room3 select[data-env-answer]');
+  let classifyCorrect = true;
+  let anyBlank = false;
+  selects.forEach(s => {
+    if (!s.value) anyBlank = true;
+    if (s.value !== s.dataset.envAnswer) classifyCorrect = false;
+  });
+
+  const finalAnswer = document.getElementById('room3final').value.trim().toLowerCase();
+
+  if (anyBlank) {
+    showFeedback('room3fb', false, '✗ Classify all nine threats first.');
+    return;
+  }
+  if (!classifyCorrect) {
+    showFeedback('room3fb', false, '✗ At least one threat is in the wrong environment. Remember: micro = inside, market = surrounding, macro = society-wide.');
+    return;
+  }
+  if (finalAnswer !== 'macro') {
+    showFeedback('room3fb', false, '✗ Classifications look right, but the final answer is wrong. Which environment is the business powerless to change?');
+    return;
+  }
+  showFeedback('room3fb', true, '✓ Environment stabilised. Keyword confirmed.');
+  unlockRoom('room3', 'environment', 'MACRO');
+}
+
+/* ============================================================
+   ROOM 4 — ETHICS
+   ============================================================ */
+function checkRoom4() {
+  const selects = document.querySelectorAll('#screen-room4 select[data-eth-answer]');
+  let allCorrect = true;
+  let anyBlank = false;
+  selects.forEach(s => {
+    if (!s.value) anyBlank = true;
+    if (s.value !== s.dataset.ethAnswer) allCorrect = false;
+  });
+
+  if (anyBlank) {
+    showFeedback('room4fb', false, '✗ Rule on every case before submitting.');
+  } else if (allCorrect) {
+    showFeedback('room4fb', true, '✓ Rulings upheld. Compliance restored.');
+    unlockRoom('room4', 'ethics', 'LAW');
+  } else {
+    showFeedback('room4fb', false, '✗ At least one ruling is wrong. Remember: illegal = breaks the law; unethical = wrong but not illegal; both = breaks the law AND is morally wrong.');
+  }
+}
+
+/* ============================================================
+   ROOM 5 — HR ORDERING
+   ============================================================ */
+const HR_STEPS = [
+  { id: 'jd',      label: 'Draw up a job description',   correct: 0 },
+  { id: 'advert',  label: 'Advertise the vacancy',        correct: 1 },
+  { id: 'screen',  label: 'Screen applications',          correct: 2 },
+  { id: 'interv',  label: 'Conduct interviews',           correct: 3 },
+  { id: 'appoint', label: 'Appoint the suitable candidate', correct: 4 },
+  { id: 'induct',  label: 'Induct the new employee',      correct: 5 }
+];
+
+// deterministic "scramble" — always the same order so it's fair
+let hrOrder = ['advert', 'induct', 'jd', 'interv', 'screen', 'appoint'];
+
+function buildHRList() {
+  hrOrder = ['advert', 'induct', 'jd', 'interv', 'screen', 'appoint'];
+  renderHRList();
+}
+
+function renderHRList() {
+  const list = document.getElementById('hrList');
+  list.innerHTML = '';
+  hrOrder.forEach((id, idx) => {
+    const step = HR_STEPS.find(s => s.id === id);
+    const li = document.createElement('li');
+    li.className = 'order-item';
+    li.innerHTML = `
+      <span class="num">${String(idx + 1).padStart(2, '0')}</span>
+      <span class="label">${step.label}</span>
+      <span class="controls">
+        <button class="order-btn" onclick="moveHR(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+        <button class="order-btn" onclick="moveHR(${idx}, 1)" ${idx === hrOrder.length - 1 ? 'disabled' : ''}>▼</button>
+      </span>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function moveHR(idx, dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= hrOrder.length) return;
+  [hrOrder[idx], hrOrder[newIdx]] = [hrOrder[newIdx], hrOrder[idx]];
+  renderHRList();
+}
+
+function checkRoom5() {
+  let correct = true;
+  hrOrder.forEach((id, idx) => {
+    const step = HR_STEPS.find(s => s.id === id);
+    if (step.correct !== idx) correct = false;
+  });
+
+  if (correct) {
+    showFeedback('room5fb', true, '✓ Recruitment process reassembled correctly.');
+    unlockRoom('room5', 'hr', 'HIREME');
+  } else {
+    showFeedback('room5fb', false, '✗ Sequence is not right yet. Think about the logical flow — what has to exist before you can advertise? Interview before or after screening?');
+  }
+}
+
+/* ============================================================
+   ROOM 6 — FINANCE
+   ============================================================ */
+function checkRoom6() {
+  const f1 = document.getElementById('fin1').value.trim();
+  const f2 = document.getElementById('fin2').value;
+  const f3 = document.getElementById('fin3').value;
+
+  if (!f1 || !f2 || !f3) {
+    showFeedback('room6fb', false, '✗ All three questions must be answered.');
+    return;
+  }
+
+  const correct = (f1 === '2') && (f2 === '8') && (f3 === '4');
+  if (correct) {
+    showFeedback('room6fb', true, '✓ Interpretation correct. Treasury unlocked.');
+    unlockRoom('room6', 'finance', '284');
+  } else {
+    showFeedback('room6fb', false, '✗ At least one answer is wrong. Recalculate the ratio (60 000 ÷ 30 000) and think carefully about what increases profit vs. reduces it.');
+  }
+}
+
+/* ============================================================
+   FINAL VAULT
+   ============================================================ */
+document.querySelectorAll('#vaultOptions .option-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#vaultOptions .option-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+function checkVault() {
+  const picked = document.querySelector('#vaultOptions .option-btn.selected');
+  if (!picked) {
+    showFeedback('vaultfb', false, '✗ Select a strategy first.');
+    return;
+  }
+  if (picked.dataset.correct === 'true') {
+    showFeedback('vaultfb', true, '✓ Integrated turnaround approved by the board!');
+    setTimeout(() => finishMission(), 900);
+  } else {
+    showFeedback('vaultfb', false, '✗ A business in multi-department crisis cannot be saved by a single quick fix or by abandoning core management. Rethink your approach.');
+  }
+}
+
+function finishMission() {
+  // capture stats
+  const elapsed = Math.floor((Date.now() - state.started) / 1000);
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('finalTime').textContent = m + ':' + s;
+  document.getElementById('finalAttempts').textContent = state.attempts;
+  go('success');
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+buildHRList();
+
+// Observe the briefing screen so we only typewrite when it shows
+const briefingObserver = new MutationObserver(() => {
+  const br = document.getElementById('screen-briefing');
+  if (br.classList.contains('active')) {
+    const target = document.getElementById('briefingText');
+    if (!target.dataset.typed) {
+      typewriter(target, briefingText, 14);
+      target.dataset.typed = '1';
+    }
+  }
+});
+briefingObserver.observe(document.getElementById('screen-briefing'), { attributes: true, attributeFilter: ['class'] });
+</script>
+</body>
+</html>
