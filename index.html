@@ -961,43 +961,43 @@ const DEFAULT_CONTENT = {
           id: "bin",
           label: "Wastepaper bin",
           hidden: true,
-          clueTitle: "Crumpled audit memo",
-          clueBody: "AUDIT MEMO — Smith &amp; Co. Chartered Auditors<br><br>To: The Board<br><br>Annual reports must be <strong>truthful</strong> and verified by independent auditors before publication. Any attempt to suppress or distort findings constitutes a breach of fiduciary duty.",
-          takeaway: "King Code principle: truthful, audited reporting"
+          clueTitle: "Torn fragments",
+          clueBody: "Pieced together from scraps of torn paper at the bottom of the bin. Some lines are missing, others smudged.<br><br><em>'…so the auditors' findings on the environmental matter shall <strong>not</strong> appear in the public report. The shareholders will receive a [<em>torn</em>] amended version…<br><br>…convenient that the chair has not yet asked for sight of the original draft. Trust the King framework principles will [<em>torn</em>] interpreted broadly enough to…<br><br>…J.B.'</em><br><br>Whoever wrote this didn't want it found.",
+          takeaway: "<strong>Reflection:</strong> What does this say about how this board treats the truth? Which governance principle is it breaking?"
         },
         {
           id: "whiteboard",
           label: "Whiteboard",
-          clueTitle: "Faded whiteboard notes",
-          clueBody: "Scrawled in dry-erase marker, almost wiped clean:<br><br><em>King Code IV — four pillars of good governance:</em><br>· Accountability<br>· Responsibility<br>· Fairness<br>· Transparency<br><br><em>Without these, trust collapses.</em>",
-          takeaway: "King Code principle: accountability &amp; responsibility"
+          clueTitle: "Faded marker scribbles",
+          clueBody: "Half-erased, with overlapping diagrams in different coloured markers. Whoever last used this board was working through something — and gave up.<br><br><em>'BOARD ⟶ CEO ⟶ ?'<br>'who answers to who?'<br>'four pillars (one rubbed out)'<br>'A__   R__   F__   T__'<br>'who pays when no one tells?'</em><br><br>The four letters are the start of something. South African corporate governance has one famous framework with exactly four principles.",
+          takeaway: "<strong>Reflection:</strong> Four pillars… what's the framework called? Where have you seen it before in class?"
         },
         {
           id: "mug",
           label: "CEO's coffee mug",
-          clueTitle: "Sticky note under the mug",
-          clueBody: "A handwritten yellow note, hidden under a half-drunk coffee:<br><br>“Tomorrow's board meeting — keep the environmental damage report <strong>out of</strong> shareholder packs. They don't need to know.”<br><br><em>— Initialled by the CEO.</em>",
-          takeaway: "Warning sign: this is BAD governance — concealment of material information"
+          clueTitle: "Coffee-stained sticky note",
+          clueBody: "A sticky note half-stuck to the underside of the mug. The handwriting is the CEO's. Most of the ink has run, but the legible parts read:<br><br><em>'…don't bring the env. report to the AGM… S won't know to ask… best the four pillars stay academic for now… J.'</em><br><br>The wet ring of coffee obscures the rest.",
+          takeaway: "<strong>Reflection:</strong> The CEO is choosing concealment over disclosure. Which governance principle does this directly break?"
         },
         {
           id: "calendar",
           label: "Wall calendar",
-          clueTitle: "Wall calendar",
-          clueBody: "A small desk calendar, page open at <strong>July 2nd</strong>. The day is circled in red marker, with a single word scribbled:<br><br><em>“Audit.”</em><br><br>The numbers <strong>0&nbsp;7&nbsp;0&nbsp;2</strong> are clearly visible.",
-          takeaway: "These four digits look like a code for something locked in this room…"
+          clueTitle: "Wall calendar — July",
+          clueBody: "A wall calendar, July. Several handwritten entries in different colours of ink:<br><br>· <strong>2nd:</strong> AGM — board + shareholders<br>· <strong>7th:</strong> Auditors' final draft due<br>· <strong>14th:</strong> Founder's day<br>· <strong>30th:</strong> Q2 results published<br><br><em>Of these four entries, only one is the day directors must face their shareholders directly. That date is the one no board can afford to forget.</em>",
+          takeaway: "<strong>Reflection:</strong> Of these dates, which matters most to a shareholder — and why might a corrupt board want to control what's heard there?"
         },
         {
           id: "cabinet",
           label: "Filing cabinet",
           locked: true,
-          code: "0702",
+          code: "0207",
           codePromptTitle: "Locked filing cabinet",
-          codePrompt: "A heavy steel filing cabinet, secured with a 4-digit combination lock. The lock is dusty but recently used. <em>Riddle: \"Where the board meets, the day they cannot forget — find it marked, and read its date as four digits (DDMM).\"</em>",
+          codePrompt: "A heavy steel filing cabinet, secured with a 4-digit combination lock. The lock is dusty but recently used. <em>Riddle: \"Where the board meets shareholders — find that day among the dates, and read it as four digits (DDMM).\"</em>",
           codeLabel: "ENTER 4-DIGIT CODE",
-          codeWrongFb: "✗ Incorrect code. Look for a date or number elsewhere in the room.",
+          codeWrongFb: "✗ Incorrect code. Re-read the calendar carefully — which date is the shareholders' meeting?",
           clueTitle: "Board appointment letter",
-          clueBody: "On official letterhead, signed by the company secretary:<br><br>“Following shareholder concerns about board oversight, three <strong>independent non-executive directors</strong> have been formally appointed. The board now meets King Code requirements for independent oversight and is empowered to challenge executive decisions.”",
-          takeaway: "King Code principle: independent oversight via non-executive directors"
+          clueBody: "On official letterhead, the company secretary writes:<br><br><em>'Following the shareholder vote at last year's AGM, three independent <strong>non-executive directors</strong> have been appointed to the board. They will sit on the audit and remuneration committees, and have the standing to challenge any executive decision they consider not in the company's interest.'</em><br><br><em>Filed under: Governance reforms.</em>",
+          takeaway: "<strong>Reflection:</strong> Why does adding independent directors strengthen oversight? What can they do that an internal-only board cannot?"
         }
       ],
       scene: "boardroom",
@@ -1020,8 +1020,8 @@ const DEFAULT_CONTENT = {
         requiredSelections: 3,
         shortAnswer: {
           prompt: "Name the <strong>code</strong> that sets out South Africa's corporate-governance principles. (One or two words.)",
-          keywords: ["king code", "king report", "king iv", "king 4"],
-          hint: "It's named after a person, and is referred to throughout the boardroom."
+          keywords: ["king code", "king report", "king iv", "king 4", "king framework"],
+          hint: "Named after a person. Has four principles, sometimes called \"pillars\". Look for the framework name buried in the documents — it's only mentioned once."
         },
         extendedResponses: [
           {
@@ -2095,12 +2095,15 @@ function buildBoardroomScene(room) {
         <!-- Whiteboard frame -->
         <rect x="310" y="225" width="120" height="110" fill="#2A3244" stroke="#5A6478" stroke-width="2"/>
         <rect x="315" y="230" width="110" height="100" fill="#E8EAED"/>
-        <!-- Faded marker text -->
-        <text x="320" y="248" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">King Code IV...</text>
-        <text x="320" y="262" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">- Account...</text>
-        <text x="320" y="276" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">- Respons...</text>
-        <text x="320" y="290" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">- Fairness</text>
-        <text x="320" y="304" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">- Transp...</text>
+        <!-- Scrawled framework diagram (no plain answers) -->
+        <text x="320" y="246" fill="#5A6478" style="font-family: 'Lora',serif; font-size:8px; font-style:italic;">duty? to whom?</text>
+        <text x="320" y="262" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">BOARD ⟶ CEO ⟶ ?</text>
+        <line x1="320" y1="269" x2="412" y2="269" stroke="#3D4860" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.5"/>
+        <text x="320" y="282" fill="#5A6478" style="font-family: 'Lora',serif; font-size:7px; font-style:italic;">[four pillars — one rubbed out]</text>
+        <text x="322" y="298" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em;">A__  R__  F__  T__</text>
+        <text x="320" y="316" fill="#EF4444" style="font-family: 'Lora',serif; font-size:8px; font-style:italic;">"who pays when no one tells?"</text>
+        <!-- Smudged erasure marks -->
+        <ellipse cx="395" cy="261" rx="14" ry="5" fill="#E8EAED" stroke="#C5C8D0" stroke-width="0.3" opacity="0.6"/>
         <!-- marker holder -->
         <rect x="358" y="335" width="24" height="4" fill="#3D4860"/>
         <circle cx="365" cy="337" r="2.5" fill="#EF4444"/>
@@ -2114,21 +2117,20 @@ function buildBoardroomScene(room) {
 
       <!-- CALENDAR (HOTSPOT) -->
       <g class="hotspot" data-hotspot-id="calendar">
-        <rect class="hit-zone" x="858" y="220" width="80" height="100" rx="2"/>
-        <rect x="863" y="225" width="70" height="90" fill="#FFFFFF" stroke="#3D4860" stroke-width="1.5"/>
-        <rect x="863" y="225" width="70" height="18" fill="#EF4444"/>
+        <rect class="hit-zone" x="858" y="218" width="80" height="124" rx="2"/>
+        <rect x="863" y="225" width="70" height="110" fill="#FFFFFF" stroke="#3D4860" stroke-width="1.5"/>
+        <rect x="863" y="225" width="70" height="16" fill="#EF4444"/>
         <text x="898" y="237" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:10px; letter-spacing:0.1em;">JULY</text>
-        <!-- mini calendar grid -->
+        <!-- mini calendar grid (no highlight on any single date) -->
         <text x="868" y="252" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">M T W T F S S</text>
-        <text x="869" y="263" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">1</text>
-        <!-- Circled day 2 -->
-        <circle cx="877" cy="261" r="5" fill="none" stroke="#EF4444" stroke-width="1.5"/>
-        <text x="877" y="263" text-anchor="middle" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:6px; font-weight:bold;">2</text>
-        <text x="884" y="263" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">3 4 5 6 7</text>
-        <text x="869" y="275" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">8 9 10 11 12 13 14</text>
+        <text x="869" y="263" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">1  2  3  4  5  6  7</text>
+        <text x="869" y="275" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">8  9 10 11 12 13 14</text>
         <text x="869" y="287" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">15 16 17 18 19 20 21</text>
         <text x="869" y="299" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">22 23 24 25 26 27 28</text>
         <text x="869" y="311" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">29 30 31</text>
+        <!-- Handwritten annotations below grid (handwritten cursive look via Lora italic) -->
+        <text x="868" y="323" fill="#EF4444" style="font-family: 'Lora',serif; font-size:5.5px; font-style:italic;">2 — AGM</text>
+        <text x="868" y="331" fill="#5A6478" style="font-family: 'Lora',serif; font-size:5.5px; font-style:italic;">14 — Founder's day</text>
         <!-- Marker -->
         <circle class="hot-marker" cx="935" cy="220" r="11" fill="#F5A623"/>
         <text class="hot-marker" x="935" y="224" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
@@ -2200,29 +2202,29 @@ function buildBoardroomScene(room) {
         <text class="hot-label" x="320" y="388" text-anchor="middle">Coffee mug</text>
       </g>
 
-      <!-- WASTEPAPER BIN (HOTSPOT) -->
+      <!-- WASTEPAPER BIN (HOTSPOT) — front left of table on the floor -->
       <g class="hotspot" data-hotspot-id="bin">
-        <rect class="hit-zone" x="700" y="430" width="100" height="120" rx="2"/>
+        <rect class="hit-zone" x="20" y="475" width="100" height="110" rx="2"/>
         <!-- Bin shadow -->
-        <ellipse cx="750" cy="540" rx="35" ry="6" fill="#0A0E18" opacity="0.7"/>
+        <ellipse cx="65" cy="585" rx="38" ry="6" fill="#0A0E18" opacity="0.7"/>
         <!-- Bin body (trapezoid) -->
-        <polygon points="720,455 780,455 770,535 730,535" fill="#3D4860" stroke="#5A6478" stroke-width="1.5"/>
+        <polygon points="35,505 100,505 92,580 43,580" fill="#4A5468" stroke="#7A8498" stroke-width="1.5"/>
         <!-- Rim -->
-        <ellipse cx="750" cy="455" rx="32" ry="6" fill="#5A6478"/>
-        <ellipse cx="750" cy="455" rx="28" ry="4" fill="#161C2B"/>
+        <ellipse cx="68" cy="505" rx="35" ry="6" fill="#7A8498"/>
+        <ellipse cx="68" cy="505" rx="31" ry="4" fill="#161C2B"/>
         <!-- Crumpled paper sticking out -->
         <g>
-          <polygon points="735,448 745,440 758,442 762,452 752,455 740,453" fill="#F0EAD8"/>
-          <line x1="740" y1="446" x2="755" y2="448" stroke="#8B92A7" stroke-width="0.4"/>
-          <line x1="742" y1="449" x2="757" y2="450" stroke="#8B92A7" stroke-width="0.4"/>
+          <polygon points="50,498 62,488 78,490 84,502 72,506 56,503" fill="#F0EAD8"/>
+          <line x1="56" y1="495" x2="76" y2="498" stroke="#8B92A7" stroke-width="0.4"/>
+          <line x1="58" y1="500" x2="78" y2="502" stroke="#8B92A7" stroke-width="0.4"/>
         </g>
         <!-- Another crumpled paper near base -->
-        <polygon points="770,520 785,515 790,525 778,530" fill="#F0EAD8" opacity="0.7"/>
+        <polygon points="85,560 100,555 105,567 92,572" fill="#F0EAD8" opacity="0.7"/>
         <!-- Marker -->
-        <circle class="hot-marker" cx="790" cy="445" r="11" fill="#F5A623"/>
-        <text class="hot-marker" x="790" y="449" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
-        <text class="hot-checkmark" x="790" y="451" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
-        <text class="hot-label" x="750" y="424" text-anchor="middle">Wastepaper bin</text>
+        <circle class="hot-marker" cx="115" cy="478" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="115" y="482" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="115" y="484" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="65" y="468" text-anchor="middle">Wastepaper bin</text>
       </g>
 
       <!-- Foreground subtle vignette -->
