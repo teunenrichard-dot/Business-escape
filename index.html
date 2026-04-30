@@ -401,6 +401,341 @@
     opacity: 0.5; transition: opacity 0.2s ease;
   }
   .hud-admin-link:hover { opacity: 1; color: var(--amber); }
+
+  /* =========================================================
+     ESCAPE ROOM — boardroom scene, hotspots, modal, inventory
+     ========================================================= */
+  .escape-intro {
+    background: var(--ink-2);
+    border-left: 3px solid var(--cyan);
+    padding: 16px 20px; margin-bottom: 20px;
+    font-family: var(--font-mono); font-size: 13px;
+    color: var(--text-muted); letter-spacing: 0.02em;
+  }
+  .escape-intro strong { color: var(--cyan); }
+
+  /* The boardroom scene wrapper */
+  .scene-wrap {
+    position: relative;
+    background: linear-gradient(180deg, #0F1320 0%, #060810 100%);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    aspect-ratio: 5 / 3;
+  }
+  .scene-svg {
+    display: block;
+    width: 100%; height: 100%;
+  }
+
+  /* Hotspot interaction layer */
+  .hotspot {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .hotspot:hover { transform: translateY(-1px); }
+  .hotspot .hit-zone {
+    fill: transparent;
+    stroke: transparent;
+    stroke-width: 2;
+    transition: stroke 0.2s ease, fill 0.2s ease;
+  }
+  .hotspot:hover .hit-zone {
+    fill: rgba(245, 166, 35, 0.08);
+    stroke: var(--amber);
+  }
+  .hotspot:hover .hot-label { opacity: 1; }
+  .hot-label {
+    opacity: 0;
+    fill: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .hot-marker {
+    transform-origin: center center;
+    animation: pulseMarker 2s ease-in-out infinite;
+  }
+  @keyframes pulseMarker {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+  .hotspot.found .hot-marker { display: none; }
+  .hotspot.found .hit-zone { fill: rgba(16, 185, 129, 0.06); }
+  .hotspot.found .hot-checkmark {
+    opacity: 1; transform: scale(1);
+  }
+  .hot-checkmark {
+    opacity: 0; transform: scale(0.5);
+    transform-origin: center center;
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    fill: var(--emerald);
+    pointer-events: none;
+  }
+  .hotspot.locked .hot-marker { animation-name: pulseLocked; }
+  @keyframes pulseLocked {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* Clue inventory bar */
+  .clue-inventory {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .clue-slot {
+    background: var(--ink-2);
+    border: 1px dashed var(--border-strong);
+    border-radius: 3px;
+    padding: 12px 14px;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .clue-slot.found {
+    border-style: solid;
+    border-color: var(--emerald);
+    background: rgba(16, 185, 129, 0.05);
+    animation: slotFound 0.6s ease;
+  }
+  @keyframes slotFound {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.04); box-shadow: 0 0 24px var(--emerald-glow); }
+    100% { transform: scale(1); }
+  }
+  .clue-slot .slot-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .clue-slot.found .slot-tag { color: var(--emerald); }
+  .clue-slot .slot-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+  .clue-slot.found .slot-name { color: var(--text); }
+
+  /* Clue modal — appears as a paper note */
+  .clue-modal-back {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 8, 16, 0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 24px;
+    animation: fadeBack 0.25s ease;
+  }
+  .clue-modal-back.active { display: flex; }
+  @keyframes fadeBack {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .clue-modal {
+    background: linear-gradient(180deg, var(--surface) 0%, var(--ink-2) 100%);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    max-width: 540px;
+    width: 100%;
+    padding: 28px;
+    position: relative;
+    animation: clueRise 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes clueRise {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .clue-modal::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    opacity: 0.6;
+  }
+  .clue-modal .modal-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .clue-modal .modal-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+  .clue-modal .modal-body {
+    background: var(--ink);
+    border-left: 3px solid var(--amber);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  .clue-modal .modal-body em { color: var(--text-muted); font-style: italic; }
+  .clue-modal .modal-body strong { color: var(--amber); }
+  .clue-modal .modal-takeaway {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--cyan);
+    padding: 10px 14px;
+    background: rgba(34, 211, 238, 0.06);
+    border: 1px dashed rgba(34, 211, 238, 0.3);
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .clue-modal .modal-actions {
+    display: flex; justify-content: flex-end; gap: 12px;
+  }
+
+  /* Locked-cabinet keypad inside modal */
+  .keypad-wrap {
+    background: var(--ink);
+    border: 1px solid var(--border-strong);
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .keypad-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.2em;
+    margin-bottom: 12px;
+  }
+  .keypad-display {
+    font-family: var(--font-mono);
+    font-size: 32px;
+    letter-spacing: 0.5em;
+    color: var(--amber);
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    border-radius: 3px;
+    min-height: 64px;
+    text-align: center;
+  }
+  .keypad-display.shake { animation: shake 0.4s ease; }
+  .keypad-display.success {
+    color: var(--emerald);
+    border-color: var(--emerald);
+    animation: glow 0.6s ease;
+  }
+  .keypad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+  .keypad-btn {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    padding: 12px 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .keypad-btn:hover { border-color: var(--amber); color: var(--amber); }
+  .keypad-btn:active { transform: scale(0.94); }
+  .keypad-btn.action { color: var(--text-muted); font-size: 11px; letter-spacing: 0.1em; }
+  .keypad-fb {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--red);
+    margin-top: 12px;
+    min-height: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Final gate (locked door / comprehension question) */
+  .final-gate {
+    background: var(--ink-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    position: relative;
+    transition: all 0.6s ease;
+  }
+  .final-gate.locked {
+    text-align: center;
+    border-style: dashed;
+  }
+  .final-gate.locked .gate-icon {
+    width: 64px; height: 64px;
+    margin: 0 auto 12px;
+    color: var(--text-dim);
+  }
+  .final-gate.unlocked {
+    border-color: var(--amber);
+    box-shadow: 0 0 24px rgba(245, 166, 35, 0.15);
+    animation: gateUnlock 0.8s ease;
+  }
+  @keyframes gateUnlock {
+    0% { transform: scale(0.98); }
+    50% { box-shadow: 0 0 64px var(--amber-glow); }
+    100% { transform: scale(1); }
+  }
+  .gate-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+  .final-gate.locked .gate-eyebrow { color: var(--text-dim); }
+  .gate-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .final-gate.locked .gate-title { color: var(--text-muted); }
+  .gate-body {
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    font-size: 15px;
+  }
+  .gate-progress {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--amber);
+    background: var(--ink);
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+  }
 </style>
 </head>
 <body>
@@ -509,6 +844,8 @@
       <button class="btn" onclick="restart()">New Mission →</button>
     </div>
   </section>
+  <!-- Clue modal host (escape rooms) -->
+  <div class="clue-modal-back" id="clueModalBack" onclick="if(event.target===this) document.getElementById('clueModalBack').classList.remove('active')"></div>
 </main>
 
 <script>
@@ -531,30 +868,83 @@ const DEFAULT_CONTENT = {
     briefing: "At 0400 hours this morning, every department of a major regional company went dark at once. The board has retreated. Staff are panicking. Auditors are circling. You have been flown in as a consulting team. Six department crises must be diagnosed in order — governance, marketing, operating environment, ethics, human resources, and finance. Each one yields a code. Assemble all six to reach the boardroom and deliver the final recommendation. Move fast. The vault seals at sundown.",
     successMessage: "The business has been saved. The board has approved every recommendation. Your consulting fee is in the post.",
     /* --- Carl's integrations --- */
-    googleSheetsUrl: "https://script.google.com/macros/s/AKfycbyrMgCjD6h43I6toIjPI1rMBaqNP_cQ7C2367p8QfD38pH-ACp2nJeIi6rtB_eb6SYV/exec",   // ← Paste the Apps Script Web App URL here (see setup guide)
+    googleSheetsUrl: "",   // ← Paste the Apps Script Web App URL here (see setup guide)
     adminPassword: "carl2026"  // ← Change this! Client-side only, not real security.
   },
   rooms: [
     {
       id: "room1", key: "governance", number: "DEPT 01", name: "Governance Chamber",
-      type: "selectCards",
-      scenario: "The boardroom door is sealed. Five practice reports lie on the table. Identify the <strong>three practices</strong> that reflect <strong>good corporate governance</strong> under the King Code, and the vault keypad will reveal the access code.",
-      sectionHeading: "Board Practice Files",
-      items: [
-        { text: "The CEO makes all financial decisions alone and does not report to shareholders.", correct: false },
-        { text: "The company publishes truthful, audited annual reports to all stakeholders.", correct: true },
-        { text: "Independent non-executive directors are appointed to strengthen oversight of the board.", correct: true },
-        { text: "Managers hide environmental damage caused by operations from the public.", correct: false },
-        { text: "The board acts with accountability and responsibility toward all shareholders.", correct: true }
+      type: "escapeRoom",
+      scenario: "The boardroom is empty. The directors fled in a hurry — papers, mugs and clues left behind. Investigate <strong>every object</strong> in the room. Each one teaches you something about good governance under the King Code. Once you've gathered all the evidence, the boardroom door will release its final test.",
+      sectionHeading: "The Abandoned Boardroom",
+      hotspots: [
+        {
+          id: "bin",
+          label: "Wastepaper bin",
+          clueTitle: "Crumpled audit memo",
+          clueBody: "AUDIT MEMO — Smith &amp; Co. Chartered Auditors<br><br>To: The Board<br><br>Annual reports must be <strong>truthful</strong> and verified by independent auditors before publication. Any attempt to suppress or distort findings constitutes a breach of fiduciary duty.",
+          takeaway: "King Code principle: truthful, audited reporting"
+        },
+        {
+          id: "whiteboard",
+          label: "Whiteboard",
+          clueTitle: "Faded whiteboard notes",
+          clueBody: "Scrawled in dry-erase marker, almost wiped clean:<br><br><em>King Code IV — four pillars of good governance:</em><br>· Accountability<br>· Responsibility<br>· Fairness<br>· Transparency<br><br><em>Without these, trust collapses.</em>",
+          takeaway: "King Code principle: accountability &amp; responsibility"
+        },
+        {
+          id: "mug",
+          label: "CEO's coffee mug",
+          clueTitle: "Sticky note under the mug",
+          clueBody: "A handwritten yellow note, hidden under a half-drunk coffee:<br><br>“Tomorrow's board meeting — keep the environmental damage report <strong>out of</strong> shareholder packs. They don't need to know.”<br><br><em>— Initialled by the CEO.</em>",
+          takeaway: "Warning sign: this is BAD governance — concealment of material information"
+        },
+        {
+          id: "calendar",
+          label: "Wall calendar",
+          clueTitle: "Wall calendar",
+          clueBody: "A small desk calendar, page open at <strong>July 2nd</strong>. The day is circled in red marker, with a single word scribbled:<br><br><em>“Audit.”</em><br><br>The numbers <strong>0&nbsp;7&nbsp;0&nbsp;2</strong> are clearly visible.",
+          takeaway: "These four digits look like a code for something locked in this room…"
+        },
+        {
+          id: "cabinet",
+          label: "Filing cabinet",
+          locked: true,
+          code: "0702",
+          codePromptTitle: "Locked filing cabinet",
+          codePrompt: "A heavy steel filing cabinet, secured with a 4-digit combination lock. The lock is dusty but recently used. Find the code somewhere else in this room.",
+          codeLabel: "ENTER 4-DIGIT CODE",
+          codeWrongFb: "✗ Incorrect code. Look for a date or number elsewhere in the room.",
+          clueTitle: "Board appointment letter",
+          clueBody: "On official letterhead, signed by the company secretary:<br><br>“Following shareholder concerns about board oversight, three <strong>independent non-executive directors</strong> have been formally appointed. The board now meets King Code requirements for independent oversight and is empowered to challenge executive decisions.”",
+          takeaway: "King Code principle: independent oversight via non-executive directors"
+        }
       ],
-      requiredSelections: 3,
+      finalGate: {
+        lockedTitle: "Boardroom door — sealed",
+        lockedBody: "The door is sealed. You haven't gathered enough evidence yet. Investigate the remaining objects in the room.",
+        unlockedTitle: "Boardroom door — final challenge",
+        unlockedBody: "All evidence collected. Now apply what you've learned: based on the clues, identify the <strong>three practices</strong> that reflect good corporate governance under the King Code."
+      },
+      comprehension: {
+        prompt: "Choose the THREE practices that reflect good corporate governance, based on what you found in the room.",
+        items: [
+          { text: "The CEO makes all financial decisions alone and does not report to shareholders.", correct: false },
+          { text: "The company publishes truthful, audited annual reports to all stakeholders.", correct: true },
+          { text: "Independent non-executive directors are appointed to strengthen oversight of the board.", correct: true },
+          { text: "Managers hide environmental damage caused by operations from the public.", correct: false },
+          { text: "The board acts with accountability and responsibility toward all shareholders.", correct: true }
+        ],
+        requiredSelections: 3
+      },
       unlockCode: "472", unlockDisplay: "4 7 2",
-      unlockLabel: "Vault keypad unlocked • Code recovered",
-      fbCorrect: "✓ Board practices verified. Access code extracted.",
+      unlockLabel: "Boardroom door released • Access code recovered",
+      fbCorrect: "✓ Board practices verified. Access code extracted from the safe.",
       fbWrongCount: "✗ Good corporate governance shows in exactly three of these practices — no more, no less.",
-      fbWrongPicks: "✗ One or more selections do not reflect good governance. Review each practice carefully.",
+      fbWrongPicks: "✗ One or more selections do not reflect good governance. Re-read your collected clues — particularly the auditor memo, the whiteboard, and the appointment letter.",
+      fbCluesIncomplete: "✗ Investigate every object in the room before approaching the door.",
       nextLabel: "Next: Marketing Lab →",
-      buttonLabel: "Verify Selection"
+      buttonLabel: "Submit to the Board"
     },
     {
       id: "room2", key: "marketing", number: "DEPT 02", name: "Marketing Lab",
@@ -816,6 +1206,8 @@ function renderRoomBody(room) {
     body.innerHTML = html;
   } else if (room.type === 'ordering') {
     renderOrderingList(room);
+  } else if (room.type === 'escapeRoom') {
+    renderEscapeRoom(room);
   } else if (room.type === 'finance') {
     body.innerHTML = `
       <div class="q-row">
@@ -966,6 +1358,11 @@ function restart() {
     r._currentOrder = r.scrambledIndices.slice();
     refreshOrderingList(r);
   });
+  // reset escape rooms
+  CONTENT.rooms.filter(r => r.type === 'escapeRoom').forEach(r => {
+    renderEscapeRoom(r);
+  });
+  document.getElementById('clueModalBack').classList.remove('active');
   document.getElementById('playerNameInput').value = '';
   document.getElementById('sheetsStatus').textContent = '';
   go('welcome');
@@ -999,7 +1396,8 @@ function checkRoom(roomId) {
     dropdowns: checkDropdowns,
     dropdownsWithFinal: checkDropdownsWithFinal,
     ordering: checkOrdering,
-    finance: checkFinance
+    finance: checkFinance,
+    escapeRoom: checkEscapeRoom
   };
   handlers[room.type](room);
 }
@@ -1112,6 +1510,489 @@ async function postToSheets(name, completionTime) {
   } catch (e) {
     statusEl.textContent = '⚠ Could not record result (offline?)';
     statusEl.style.color = 'var(--red)';
+  }
+}
+
+/* =========================================================
+   ESCAPE ROOM — render + interactions + answer-check
+   ========================================================= */
+
+// Per-room state, keyed by room.id
+const escapeState = {};
+
+function renderEscapeRoom(room) {
+  // Initialise state for this room
+  escapeState[room.id] = {
+    foundClues: new Set(),
+    cabinetUnlocked: false,
+    keypadInput: '',
+    activeHotspot: null
+  };
+  const body = document.getElementById(room.id + '-body');
+
+  // Build inventory slots
+  const inventoryHtml = room.hotspots.map(h =>
+    `<div class="clue-slot" data-clue="${h.id}">
+      <div class="slot-tag">Evidence</div>
+      <div class="slot-name">${escapeHtml(h.label)}</div>
+    </div>`
+  ).join('');
+
+  // Build the SVG boardroom scene (template-driven for the governance room)
+  const sceneSvg = buildBoardroomScene(room);
+
+  // Final gate (starts locked)
+  const gateHtml = `
+    <div class="final-gate locked" id="${room.id}-gate">
+      <svg class="gate-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="14" y="28" width="36" height="28" rx="2"/>
+        <path d="M22 28 V18 a10 10 0 0 1 20 0 V28"/>
+        <circle cx="32" cy="42" r="2.5" fill="currentColor"/>
+      </svg>
+      <div class="gate-eyebrow" id="${room.id}-gate-eyebrow">${escapeHtml(room.finalGate.lockedTitle)}</div>
+      <div class="gate-title">Door Sealed</div>
+      <p class="gate-body" id="${room.id}-gate-body">${room.finalGate.lockedBody}</p>
+      <div class="gate-progress" id="${room.id}-gate-progress">EVIDENCE: 0 / ${room.hotspots.length}</div>
+      <div id="${room.id}-comprehension" style="display:none; margin-top:24px;"></div>
+    </div>
+  `;
+
+  body.innerHTML = `
+    <div class="escape-intro"><strong>SCENE:</strong> The boardroom has been abandoned mid-meeting. Click any object that looks suspicious. Some are locked — find the code elsewhere.</div>
+    <div class="scene-wrap">${sceneSvg}</div>
+    <h3 class="section-heading" style="margin-top:24px;">Evidence Collected</h3>
+    <div class="clue-inventory">${inventoryHtml}</div>
+    ${gateHtml}
+  `;
+
+  // Wire up hotspots
+  body.querySelectorAll('.hotspot').forEach(hs => {
+    hs.addEventListener('click', () => openHotspot(room, hs.dataset.hotspotId));
+  });
+}
+
+function buildBoardroomScene(room) {
+  // Five hotspots: bin, whiteboard, mug, calendar, cabinet
+  // Hotspots are positioned by id so the data drives the room.
+  // viewBox 0 0 1000 600
+  return `
+    <svg class="scene-svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="floorG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1A1F2E"/>
+          <stop offset="100%" stop-color="#0A0E18"/>
+        </linearGradient>
+        <linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#161C2B"/>
+          <stop offset="100%" stop-color="#0F1320"/>
+        </linearGradient>
+        <linearGradient id="tableG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3A2A1A"/>
+          <stop offset="100%" stop-color="#1F1610"/>
+        </linearGradient>
+        <radialGradient id="windowG" cx="0.5" cy="0.5" r="0.7">
+          <stop offset="0%" stop-color="#1F2A3A"/>
+          <stop offset="100%" stop-color="#0A0E18"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Wall (back) -->
+      <rect x="0" y="0" width="1000" height="380" fill="url(#wallG)"/>
+      <!-- Floor -->
+      <rect x="0" y="380" width="1000" height="220" fill="url(#floorG)"/>
+      <!-- Floor perspective lines -->
+      <line x1="0" y1="380" x2="1000" y2="380" stroke="#2A3244" stroke-width="0.5"/>
+      <line x1="200" y1="600" x2="500" y2="380" stroke="#2A3244" stroke-width="0.5" opacity="0.4"/>
+      <line x1="800" y1="600" x2="500" y2="380" stroke="#2A3244" stroke-width="0.5" opacity="0.4"/>
+
+      <!-- Window with city skyline (top-left, decorative) -->
+      <g>
+        <rect x="50" y="40" width="220" height="180" fill="url(#windowG)" stroke="#3D4860" stroke-width="2"/>
+        <line x1="160" y1="40" x2="160" y2="220" stroke="#3D4860" stroke-width="1"/>
+        <line x1="50" y1="130" x2="270" y2="130" stroke="#3D4860" stroke-width="1"/>
+        <!-- Distant city lights -->
+        <rect x="70" y="160" width="20" height="60" fill="#0F1320"/>
+        <rect x="100" y="180" width="14" height="40" fill="#0F1320"/>
+        <rect x="125" y="150" width="22" height="70" fill="#0F1320"/>
+        <rect x="180" y="170" width="18" height="50" fill="#0F1320"/>
+        <rect x="210" y="155" width="20" height="65" fill="#0F1320"/>
+        <rect x="240" y="180" width="16" height="40" fill="#0F1320"/>
+        <!-- A few lit windows -->
+        <rect x="76" y="180" width="3" height="3" fill="#F5A623" opacity="0.7"/>
+        <rect x="84" y="195" width="3" height="3" fill="#F5A623" opacity="0.5"/>
+        <rect x="130" y="170" width="3" height="3" fill="#F5A623" opacity="0.6"/>
+        <rect x="138" y="190" width="3" height="3" fill="#F5A623" opacity="0.7"/>
+        <rect x="186" y="180" width="3" height="3" fill="#F5A623" opacity="0.5"/>
+        <rect x="216" y="175" width="3" height="3" fill="#F5A623" opacity="0.6"/>
+        <rect x="246" y="195" width="3" height="3" fill="#F5A623" opacity="0.4"/>
+      </g>
+
+      <!-- Wall portrait (centre, decorative) -->
+      <g opacity="0.9">
+        <rect x="430" y="60" width="160" height="120" fill="#2A1F14" stroke="#5A4A2A" stroke-width="3"/>
+        <rect x="445" y="75" width="130" height="90" fill="#1F2A3A"/>
+        <ellipse cx="510" cy="115" rx="22" ry="28" fill="#2A1F14"/>
+        <rect x="488" y="135" width="44" height="30" fill="#3A2A1A"/>
+        <text x="510" y="195" text-anchor="middle" fill="#5A4A2A" style="font-family: 'Lora',serif; font-size:9px; font-style:italic;">— founder, 1962 —</text>
+      </g>
+
+      <!-- Wall clock - DECORATIVE (not a hotspot, but shows weird time as flavour) -->
+      <g opacity="0.85">
+        <circle cx="780" cy="120" r="55" fill="#2A3244" stroke="#5A6478" stroke-width="3"/>
+        <circle cx="780" cy="120" r="50" fill="#161C2B"/>
+        <text x="780" y="86" text-anchor="middle" fill="#8B92A7" style="font-family: 'Bebas Neue',sans-serif; font-size:14px;">12</text>
+        <text x="814" y="125" text-anchor="middle" fill="#8B92A7" style="font-family: 'Bebas Neue',sans-serif; font-size:14px;">3</text>
+        <text x="780" y="160" text-anchor="middle" fill="#8B92A7" style="font-family: 'Bebas Neue',sans-serif; font-size:14px;">6</text>
+        <text x="746" y="125" text-anchor="middle" fill="#8B92A7" style="font-family: 'Bebas Neue',sans-serif; font-size:14px;">9</text>
+        <line x1="780" y1="120" x2="780" y2="90" stroke="#F5A623" stroke-width="2"/>
+        <line x1="780" y1="120" x2="805" y2="120" stroke="#F5A623" stroke-width="2"/>
+        <circle cx="780" cy="120" r="3" fill="#F5A623"/>
+      </g>
+
+      <!-- WHITEBOARD (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="whiteboard">
+        <rect class="hit-zone" x="305" y="220" width="130" height="120" rx="2"/>
+        <!-- Whiteboard frame -->
+        <rect x="310" y="225" width="120" height="110" fill="#2A3244" stroke="#5A6478" stroke-width="2"/>
+        <rect x="315" y="230" width="110" height="100" fill="#E8EAED"/>
+        <!-- Faded marker text -->
+        <text x="320" y="248" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">King Code IV...</text>
+        <text x="320" y="262" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">- Account...</text>
+        <text x="320" y="276" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">- Respons...</text>
+        <text x="320" y="290" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">- Fairness</text>
+        <text x="320" y="304" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">- Transp...</text>
+        <!-- marker holder -->
+        <rect x="358" y="335" width="24" height="4" fill="#3D4860"/>
+        <circle cx="365" cy="337" r="2.5" fill="#EF4444"/>
+        <circle cx="375" cy="337" r="2.5" fill="#22D3EE"/>
+        <!-- Marker / checkmark -->
+        <circle class="hot-marker" cx="430" cy="225" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="430" y="229" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="430" y="231" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="370" y="218" text-anchor="middle">Whiteboard</text>
+      </g>
+
+      <!-- CALENDAR (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="calendar">
+        <rect class="hit-zone" x="858" y="220" width="80" height="100" rx="2"/>
+        <rect x="863" y="225" width="70" height="90" fill="#FFFFFF" stroke="#3D4860" stroke-width="1.5"/>
+        <rect x="863" y="225" width="70" height="18" fill="#EF4444"/>
+        <text x="898" y="237" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:10px; letter-spacing:0.1em;">JULY</text>
+        <!-- mini calendar grid -->
+        <text x="868" y="252" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">M T W T F S S</text>
+        <text x="869" y="263" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">1</text>
+        <!-- Circled day 2 -->
+        <circle cx="877" cy="261" r="5" fill="none" stroke="#EF4444" stroke-width="1.5"/>
+        <text x="877" y="263" text-anchor="middle" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:6px; font-weight:bold;">2</text>
+        <text x="884" y="263" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">3 4 5 6 7</text>
+        <text x="869" y="275" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">8 9 10 11 12 13 14</text>
+        <text x="869" y="287" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">15 16 17 18 19 20 21</text>
+        <text x="869" y="299" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">22 23 24 25 26 27 28</text>
+        <text x="869" y="311" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">29 30 31</text>
+        <!-- Marker -->
+        <circle class="hot-marker" cx="935" cy="220" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="935" y="224" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="935" y="226" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="898" y="213" text-anchor="middle">Calendar</text>
+      </g>
+
+      <!-- FILING CABINET (HOTSPOT - locked) -->
+      <g class="hotspot locked" data-hotspot-id="cabinet">
+        <rect class="hit-zone" x="490" y="240" width="120" height="170" rx="2"/>
+        <!-- Cabinet body -->
+        <rect x="495" y="245" width="110" height="160" fill="#3D4860" stroke="#5A6478" stroke-width="2"/>
+        <!-- 4 drawers -->
+        <rect x="500" y="250" width="100" height="35" fill="#2A3244" stroke="#5A6478"/>
+        <rect x="500" y="290" width="100" height="35" fill="#2A3244" stroke="#5A6478"/>
+        <rect x="500" y="330" width="100" height="35" fill="#2A3244" stroke="#5A6478"/>
+        <rect x="500" y="370" width="100" height="32" fill="#2A3244" stroke="#5A6478"/>
+        <!-- Handles -->
+        <rect x="540" y="266" width="20" height="3" fill="#8B92A7"/>
+        <rect x="540" y="306" width="20" height="3" fill="#8B92A7"/>
+        <rect x="540" y="346" width="20" height="3" fill="#8B92A7"/>
+        <rect x="540" y="384" width="20" height="3" fill="#8B92A7"/>
+        <!-- Lock indicator (red) -->
+        <circle cx="595" cy="258" r="4" fill="#EF4444">
+          <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Marker -->
+        <circle class="hot-marker" cx="605" cy="245" r="12" fill="#EF4444"/>
+        <text class="hot-marker" x="605" y="249" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">!</text>
+        <text class="hot-checkmark" x="605" y="251" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="550" y="237" text-anchor="middle">Filing cabinet (locked)</text>
+      </g>
+
+      <!-- BOARDROOM TABLE -->
+      <g>
+        <polygon points="100,420 900,420 850,540 150,540" fill="url(#tableG)" stroke="#1F1610" stroke-width="2"/>
+        <ellipse cx="500" cy="420" rx="400" ry="10" fill="#2A1F14"/>
+        <!-- Table reflection -->
+        <ellipse cx="500" cy="430" rx="360" ry="6" fill="#5A4A2A" opacity="0.2"/>
+      </g>
+
+      <!-- Chair backs (decorative) -->
+      <g opacity="0.6">
+        <rect x="180" y="380" width="40" height="55" fill="#1F1610" stroke="#2A1F14"/>
+        <rect x="350" y="380" width="40" height="55" fill="#1F1610" stroke="#2A1F14"/>
+        <rect x="610" y="380" width="40" height="55" fill="#1F1610" stroke="#2A1F14"/>
+        <rect x="780" y="380" width="40" height="55" fill="#1F1610" stroke="#2A1F14"/>
+      </g>
+
+      <!-- COFFEE MUG (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="mug">
+        <rect class="hit-zone" x="290" y="395" width="80" height="60" rx="2"/>
+        <!-- Mug shadow -->
+        <ellipse cx="320" cy="445" rx="28" ry="5" fill="#0A0E18" opacity="0.6"/>
+        <!-- Mug body -->
+        <path d="M298 405 L298 442 Q298 446 304 446 L336 446 Q342 446 342 442 L342 405 Z" fill="#F5A623"/>
+        <ellipse cx="320" cy="405" rx="22" ry="5" fill="#1F1610"/>
+        <ellipse cx="320" cy="405" rx="18" ry="3.5" fill="#3A2A1A"/>
+        <!-- Handle -->
+        <path d="M342 415 Q352 415 352 425 Q352 435 342 435" fill="none" stroke="#F5A623" stroke-width="3"/>
+        <!-- Sticky note peeking out -->
+        <rect x="312" y="446" width="24" height="14" fill="#FCEBA0" transform="rotate(-4 324 453)"/>
+        <line x1="316" y1="452" x2="332" y2="452" stroke="#3D4860" stroke-width="0.5" transform="rotate(-4 324 453)"/>
+        <line x1="316" y1="455" x2="328" y2="455" stroke="#3D4860" stroke-width="0.5" transform="rotate(-4 324 453)"/>
+        <!-- Marker -->
+        <circle class="hot-marker" cx="350" cy="395" r="10" fill="#F5A623"/>
+        <text class="hot-marker" x="350" y="399" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:13px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="350" y="401" text-anchor="middle" style="font-size:16px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="320" y="388" text-anchor="middle">Coffee mug</text>
+      </g>
+
+      <!-- WASTEPAPER BIN (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="bin">
+        <rect class="hit-zone" x="700" y="430" width="100" height="120" rx="2"/>
+        <!-- Bin shadow -->
+        <ellipse cx="750" cy="540" rx="35" ry="6" fill="#0A0E18" opacity="0.7"/>
+        <!-- Bin body (trapezoid) -->
+        <polygon points="720,455 780,455 770,535 730,535" fill="#3D4860" stroke="#5A6478" stroke-width="1.5"/>
+        <!-- Rim -->
+        <ellipse cx="750" cy="455" rx="32" ry="6" fill="#5A6478"/>
+        <ellipse cx="750" cy="455" rx="28" ry="4" fill="#161C2B"/>
+        <!-- Crumpled paper sticking out -->
+        <g>
+          <polygon points="735,448 745,440 758,442 762,452 752,455 740,453" fill="#F0EAD8"/>
+          <line x1="740" y1="446" x2="755" y2="448" stroke="#8B92A7" stroke-width="0.4"/>
+          <line x1="742" y1="449" x2="757" y2="450" stroke="#8B92A7" stroke-width="0.4"/>
+        </g>
+        <!-- Another crumpled paper near base -->
+        <polygon points="770,520 785,515 790,525 778,530" fill="#F0EAD8" opacity="0.7"/>
+        <!-- Marker -->
+        <circle class="hot-marker" cx="790" cy="445" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="790" y="449" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="790" y="451" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="750" y="424" text-anchor="middle">Wastepaper bin</text>
+      </g>
+
+      <!-- Foreground subtle vignette -->
+      <radialGradient id="vig" cx="0.5" cy="0.5" r="0.7">
+        <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+      </radialGradient>
+      <rect x="0" y="0" width="1000" height="600" fill="url(#vig)" pointer-events="none"/>
+    </svg>
+  `;
+}
+
+function openHotspot(room, hotspotId) {
+  const hot = room.hotspots.find(h => h.id === hotspotId);
+  if (!hot) return;
+  const st = escapeState[room.id];
+
+  if (hot.locked && !st.cabinetUnlocked) {
+    showKeypadModal(room, hot);
+  } else {
+    showClueModal(room, hot);
+  }
+}
+
+function showClueModal(room, hot) {
+  const back = document.getElementById('clueModalBack');
+  back.innerHTML = `
+    <div class="clue-modal" role="dialog" aria-modal="true">
+      <div class="modal-eyebrow">Evidence • ${escapeHtml(hot.label)}</div>
+      <div class="modal-title">${escapeHtml(hot.clueTitle)}</div>
+      <div class="modal-body">${hot.clueBody}</div>
+      <div class="modal-takeaway">▸ ${hot.takeaway}</div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeClueModal('${room.id}', '${hot.id}')">Got it →</button>
+      </div>
+    </div>
+  `;
+  back.classList.add('active');
+}
+
+function showKeypadModal(room, hot) {
+  const st = escapeState[room.id];
+  st.keypadInput = '';
+  const back = document.getElementById('clueModalBack');
+  back.innerHTML = `
+    <div class="clue-modal" role="dialog" aria-modal="true">
+      <div class="modal-eyebrow">Locked • ${escapeHtml(hot.label)}</div>
+      <div class="modal-title">${escapeHtml(hot.codePromptTitle)}</div>
+      <div class="modal-body">${escapeHtml(hot.codePrompt)}</div>
+      <div class="keypad-wrap">
+        <div class="keypad-label">${escapeHtml(hot.codeLabel)}</div>
+        <div class="keypad-display" id="keypadDisplay">_ _ _ _</div>
+        <div class="keypad-grid">
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','1')">1</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','2')">2</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','3')">3</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','4')">4</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','5')">5</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','6')">6</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','7')">7</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','8')">8</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','9')">9</button>
+          <button class="keypad-btn action" onclick="keypadClear('${room.id}')">CLR</button>
+          <button class="keypad-btn" onclick="keypadPress('${room.id}','${hot.id}','0')">0</button>
+          <button class="keypad-btn action" onclick="keypadSubmit('${room.id}','${hot.id}')">OK</button>
+        </div>
+        <div class="keypad-fb" id="keypadFb"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost btn btn-small" onclick="closeClueModal('${room.id}', null)">Close</button>
+      </div>
+    </div>
+  `;
+  back.classList.add('active');
+}
+
+function keypadPress(roomId, hotId, digit) {
+  const st = escapeState[roomId];
+  if (st.keypadInput.length >= 4) return;
+  st.keypadInput += digit;
+  refreshKeypadDisplay(roomId);
+  if (st.keypadInput.length === 4) {
+    keypadSubmit(roomId, hotId);
+  }
+}
+
+function keypadClear(roomId) {
+  const st = escapeState[roomId];
+  st.keypadInput = '';
+  refreshKeypadDisplay(roomId);
+  document.getElementById('keypadFb').textContent = '';
+}
+
+function refreshKeypadDisplay(roomId) {
+  const st = escapeState[roomId];
+  const slots = ['_','_','_','_'];
+  for (let i = 0; i < st.keypadInput.length; i++) slots[i] = st.keypadInput[i];
+  const el = document.getElementById('keypadDisplay');
+  if (el) {
+    el.textContent = slots.join(' ');
+    el.classList.remove('shake', 'success');
+  }
+}
+
+function keypadSubmit(roomId, hotId) {
+  const room = CONTENT.rooms.find(r => r.id === roomId);
+  const hot = room.hotspots.find(h => h.id === hotId);
+  const st = escapeState[roomId];
+  const display = document.getElementById('keypadDisplay');
+  const fb = document.getElementById('keypadFb');
+
+  if (st.keypadInput === hot.code) {
+    display.classList.add('success');
+    fb.textContent = '';
+    st.cabinetUnlocked = true;
+    setTimeout(() => {
+      // Now show the actual clue
+      showClueModal(room, hot);
+    }, 800);
+  } else {
+    display.classList.add('shake');
+    fb.textContent = hot.codeWrongFb;
+    setTimeout(() => {
+      st.keypadInput = '';
+      refreshKeypadDisplay(roomId);
+    }, 600);
+  }
+}
+
+function closeClueModal(roomId, hotId) {
+  document.getElementById('clueModalBack').classList.remove('active');
+  if (hotId) markClueFound(roomId, hotId);
+}
+
+function markClueFound(roomId, hotId) {
+  const room = CONTENT.rooms.find(r => r.id === roomId);
+  const st = escapeState[roomId];
+  if (st.foundClues.has(hotId)) return;
+  st.foundClues.add(hotId);
+
+  // Update SVG hotspot visual
+  const hsEl = document.querySelector(`#${roomId}-body .hotspot[data-hotspot-id="${hotId}"]`);
+  if (hsEl) hsEl.classList.add('found');
+
+  // Update inventory slot
+  const slot = document.querySelector(`#${roomId}-body .clue-slot[data-clue="${hotId}"]`);
+  if (slot) slot.classList.add('found');
+
+  // Update progress display
+  const total = room.hotspots.length;
+  const found = st.foundClues.size;
+  const progress = document.getElementById(roomId + '-gate-progress');
+  if (progress) progress.textContent = `EVIDENCE: ${found} / ${total}`;
+
+  // If all found, unlock the gate
+  if (found >= total) unlockFinalGate(room);
+}
+
+function unlockFinalGate(room) {
+  const gate = document.getElementById(room.id + '-gate');
+  gate.classList.remove('locked');
+  gate.classList.add('unlocked');
+  gate.querySelector('.gate-icon').remove();
+  gate.querySelector('.gate-title').textContent = 'Door Unlocked';
+  document.getElementById(room.id + '-gate-eyebrow').textContent = room.finalGate.unlockedTitle;
+  document.getElementById(room.id + '-gate-body').innerHTML = room.finalGate.unlockedBody;
+  document.getElementById(room.id + '-gate-progress').remove();
+
+  // Inject the comprehension question
+  const compHost = document.getElementById(room.id + '-comprehension');
+  compHost.style.display = 'block';
+  compHost.innerHTML = `
+    <p style="margin-bottom: 14px; color: var(--text); font-weight: 500;">${room.comprehension.prompt}</p>
+    <div class="card-grid">
+      ${room.comprehension.items.map((it, i) =>
+        `<button class="select-card" data-comp-idx="${i}" data-correct="${it.correct}">
+          <span class="checkbox"></span><span>${escapeHtml(it.text)}</span>
+        </button>`
+      ).join('')}
+    </div>
+  `;
+  compHost.querySelectorAll('.select-card').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('selected'));
+  });
+}
+
+function checkEscapeRoom(room) {
+  const st = escapeState[room.id];
+  if (!st || st.foundClues.size < room.hotspots.length) {
+    return showFeedback(room.id + 'fb', false, room.fbCluesIncomplete);
+  }
+  // Validate the comprehension question
+  const cards = document.querySelectorAll(`#${room.id}-comprehension .select-card`);
+  if (cards.length === 0) {
+    return showFeedback(room.id + 'fb', false, room.fbCluesIncomplete);
+  }
+  const selected = Array.from(cards).filter(c => c.classList.contains('selected'));
+  let allCorrect = true;
+  cards.forEach(c => {
+    const isCorrect = c.dataset.correct === 'true';
+    const isSelected = c.classList.contains('selected');
+    if (isCorrect !== isSelected) allCorrect = false;
+  });
+  if (selected.length !== room.comprehension.requiredSelections) {
+    showFeedback(room.id + 'fb', false, room.fbWrongCount);
+  } else if (allCorrect) {
+    showFeedback(room.id + 'fb', true, room.fbCorrect);
+    unlockRoom(room);
+  } else {
+    showFeedback(room.id + 'fb', false, room.fbWrongPicks);
   }
 }
 
