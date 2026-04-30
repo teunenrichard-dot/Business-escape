@@ -920,13 +920,15 @@ const DEFAULT_CONTENT = {
           takeaway: "King Code principle: independent oversight via non-executive directors"
         }
       ],
+      scene: "boardroom",
       finalGate: {
         lockedTitle: "Boardroom door — sealed",
         lockedBody: "The door is sealed. You haven't gathered enough evidence yet. Investigate the remaining objects in the room.",
         unlockedTitle: "Boardroom door — final challenge",
         unlockedBody: "All evidence collected. Now apply what you've learned: based on the clues, identify the <strong>three practices</strong> that reflect good corporate governance under the King Code."
       },
-      comprehension: {
+      puzzle: {
+        kind: "selectCards",
         prompt: "Choose the THREE practices that reflect good corporate governance, based on what you found in the room.",
         items: [
           { text: "The CEO makes all financial decisions alone and does not report to shareholders.", correct: false },
@@ -948,121 +950,382 @@ const DEFAULT_CONTENT = {
     },
     {
       id: "room2", key: "marketing", number: "DEPT 02", name: "Marketing Lab",
-      type: "dropdowns",
-      scenario: "A luxury restaurant launched a new campaign and it <strong>collapsed</strong>. Three decisions were disastrous. For each problem, identify which element of the <strong>marketing mix</strong> was mishandled. Get all three right to recover the keyword.",
-      sectionHeading: "Campaign Post-Mortem",
-      questions: [
-        { text: "<em>Problem A.</em> The restaurant targets wealthy adults but advertised on a children's cartoon channel.", options: ["Product","Price","Place","Promotion"], answer: "Promotion" },
-        { text: "<em>Problem B.</em> The restaurant is positioned as high-end but ran a \"two-rand combo meal\" special.", options: ["Product","Price","Place","Promotion"], answer: "Price" },
-        { text: "<em>Problem C.</em> The fine-dining menu is printed on flimsy, stained photocopy paper.", options: ["Product","Price","Place","Promotion"], answer: "Product" }
+      type: "escapeRoom",
+      scene: "marketing",
+      scenario: "The marketing agency studio is empty. Half-eaten takeaways, scattered campaign drafts, a humming computer. The agency botched the launch — every decision they made was wrong. <strong>Find evidence of all three failures</strong> hidden in the studio.",
+      sectionHeading: "The Abandoned Studio",
+      hotspots: [
+        {
+          id: "brief",
+          label: "Client brief",
+          clueTitle: "Original client brief",
+          clueBody: "ACME RESTAURANTS — CONFIDENTIAL BRIEF<br><br>Campaign objective: Position our flagship steakhouse as the city's most <strong>exclusive fine-dining experience</strong>.<br><br>Target market: <strong>wealthy adults aged 35–60, professional class, high disposable income.</strong><br><br>Tone: refined, sophisticated, aspirational.",
+          takeaway: "TARGET MARKET = wealthy adults, fine-dining"
+        },
+        {
+          id: "schedule",
+          label: "TV schedule",
+          clueTitle: "Broadcast schedule printout",
+          clueBody: "MEDIA PLAN — Q3 Campaign<br><br>Primary placement: <strong>KidsZone Cartoon Network</strong>, 06:00–11:00 weekdays.<br>Spend: R450,000.<br>Estimated reach: 3.2M children aged 4–12.<br><br><em>Reviewed by intern. Not flagged for client review.</em>",
+          takeaway: "Wrong audience entirely — fine-dining ad on a children's channel"
+        },
+        {
+          id: "menu",
+          label: "Menu sample",
+          clueTitle: "Printed menu prototype",
+          clueBody: "Pulled from the printer — a flimsy, stained photocopy on cheap white paper. The fonts are smudged. A coffee ring runs across the wagyu beef section.<br><br><em>Sticky note: \"Print 5,000 of these for the launch.\"</em>",
+          takeaway: "The product itself looks cheap — physical quality undermines the brand"
+        },
+        {
+          id: "pricelist",
+          label: "Price list",
+          clueTitle: "Launch pricing memo",
+          clueBody: "GRAND OPENING SPECIALS:<br><br>· Wagyu steak combo: <strong>R2</strong> (yes, two rand)<br>· House Cabernet bottle: R5<br>· Chocolate dessert: R1<br><br><em>Marketing director: \"Get bums on seats at any cost!\"</em>",
+          takeaway: "Price destroys positioning — luxury brands cannot run two-rand specials"
+        },
+        {
+          id: "safe",
+          label: "Locked portfolio safe",
+          locked: true,
+          code: "1985",
+          codePromptTitle: "Designer's portfolio safe",
+          codePrompt: "A locked metal portfolio case under the desk. The agency creative director's initials are engraved: J.R. The case has a 4-digit lock. Find the year somewhere in this room.",
+          codeLabel: "ENTER 4-DIGIT YEAR",
+          codeWrongFb: "✗ Wrong year. Look at dates printed on objects in the room.",
+          clueTitle: "Final campaign manifesto",
+          clueBody: "PORTFOLIO MEMO — Creative Director<br><br>\"All four classical elements of the marketing mix must align. <strong>Product, Price, Place, Promotion</strong> — fail any one and the campaign collapses.<br><br>Our error was treating them as independent. They are not. They are one unified message to the customer. Every wrong choice we made breaks one of these four pillars.\"",
+          takeaway: "The 4Ps are interdependent — one broken element collapses the whole campaign"
+        }
       ],
-      placeholder: "— select the failing element —",
+      finalGate: {
+        lockedTitle: "Server room door — locked",
+        lockedBody: "The marketing server room is sealed. Find every piece of evidence in the studio first.",
+        unlockedTitle: "Server room — final diagnosis",
+        unlockedBody: "All evidence gathered. Now diagnose: for each campaign problem, identify which element of the <strong>marketing mix</strong> was mishandled."
+      },
+      puzzle: {
+        kind: "dropdowns",
+        prompt: "Diagnose each failure by selecting the correct element of the marketing mix.",
+        placeholder: "— select the failing element —",
+        questions: [
+          { text: "<em>Problem A.</em> The restaurant targets wealthy adults but advertised on a children's cartoon channel.", options: ["Product","Price","Place","Promotion"], answer: "Promotion" },
+          { text: "<em>Problem B.</em> The restaurant is positioned as high-end but ran a \"two-rand combo meal\" special.", options: ["Product","Price","Place","Promotion"], answer: "Price" },
+          { text: "<em>Problem C.</em> The fine-dining menu is printed on flimsy, stained photocopy paper.", options: ["Product","Price","Place","Promotion"], answer: "Product" }
+        ]
+      },
       unlockCode: "MIX", unlockDisplay: "M I X",
       unlockLabel: "Marketing server restored • Keyword recovered",
       fbCorrect: "✓ Campaign diagnosis correct. Marketing server rebooting.",
       fbBlank: "✗ Diagnose all three problems before submitting.",
       fbWrong: "✗ At least one diagnosis is wrong. Re-examine the marketing mix — which element controls each decision?",
+      fbCluesIncomplete: "✗ Investigate every object in the studio first.",
       nextLabel: "Next: Environments Control →",
-      buttonLabel: "Diagnose Campaign"
+      buttonLabel: "Submit Diagnosis"
     },
     {
       id: "room3", key: "environment", number: "DEPT 03", name: "Environments Control",
-      type: "dropdownsWithFinal",
-      scenario: "The operating environment monitoring system has failed. Nine threats have been detected but they're unclassified. Sort each threat into its correct environment — <strong>Micro, Market, or Macro</strong> — then identify which environment the business has the <strong>least control over</strong>.",
-      sectionHeading: "Threat Classification",
-      questions: [
-        { text: "<em>1.</em> Unreliable employees affecting daily productivity.", options: ["Micro","Market","Macro"], answer: "Micro" },
-        { text: "<em>2.</em> A new competitor has opened two blocks away.", options: ["Micro","Market","Macro"], answer: "Market" },
-        { text: "<em>3.</em> Inflation has risen sharply this quarter.", options: ["Micro","Market","Macro"], answer: "Macro" },
-        { text: "<em>4.</em> A key supplier is repeatedly delaying stock deliveries.", options: ["Micro","Market","Macro"], answer: "Market" },
-        { text: "<em>5.</em> Poor management decisions have hurt morale.", options: ["Micro","Market","Macro"], answer: "Micro" },
-        { text: "<em>6.</em> The Reserve Bank has raised interest rates.", options: ["Micro","Market","Macro"], answer: "Macro" },
-        { text: "<em>7.</em> Customer tastes have shifted to healthier options.", options: ["Micro","Market","Macro"], answer: "Market" },
-        { text: "<em>8.</em> Production equipment is outdated and breaking down.", options: ["Micro","Market","Macro"], answer: "Micro" },
-        { text: "<em>9.</em> New national labour legislation has been passed.", options: ["Micro","Market","Macro"], answer: "Macro" }
+      type: "escapeRoom",
+      scene: "control",
+      scenario: "The operations control room is alive with flickering monitors and ringing phones. Threats have been detected from <strong>three different environments</strong> at once — but the team panicked and didn't classify them. Investigate the room, gather every threat alert, then sort them.",
+      sectionHeading: "The Control Room",
+      hotspots: [
+        {
+          id: "internal",
+          label: "Staff clipboard",
+          clueTitle: "Internal staff clipboard",
+          clueBody: "HR HANDOVER NOTES — internal issues:<br><br>· Three employees called in sick again — <em>unreliable staff affecting productivity</em><br>· Two managers made <em>poor decisions</em> last quarter, hurting team morale<br>· Production line equipment is <em>outdated</em> — breaking down weekly<br><br><em>These are problems we can fix ourselves.</em>",
+          takeaway: "MICRO environment — issues INSIDE the business that we control"
+        },
+        {
+          id: "supplier",
+          label: "Supplier email",
+          clueTitle: "Email from key supplier",
+          clueBody: "From: Acme Suppliers Ltd<br>To: Operations Director<br><br>\"We regret another delay in delivery. Stock will arrive 14 days late.\"<br><br>Also today: a competitor opened two blocks away. Customer survey shows tastes are shifting toward healthier options.<br><br><em>These touch us but aren't inside us.</em>",
+          takeaway: "MARKET environment — competitors, suppliers, customers — we influence but don't control"
+        },
+        {
+          id: "ticker",
+          label: "News ticker",
+          clueTitle: "Live news ticker readout",
+          clueBody: "BREAKING ECONOMIC HEADLINES:<br><br>· <strong>Inflation rises sharply</strong> this quarter<br>· Reserve Bank <strong>raises interest rates</strong> by 0.5%<br>· Parliament passes <strong>new national labour legislation</strong><br><br><em>Society-wide. We can't change any of this.</em>",
+          takeaway: "MACRO environment — society-wide forces we have NO control over"
+        },
+        {
+          id: "monitor",
+          label: "Locked monitor",
+          locked: true,
+          code: "0312",
+          codePromptTitle: "Encrypted analyst terminal",
+          codePrompt: "An analyst's terminal is locked. A sticky note on the screen reads: \"PIN = the date of the latest threat report (DDMM).\" Look on the wall for a recent threat date.",
+          codeLabel: "ENTER PIN (DDMM)",
+          codeWrongFb: "✗ Wrong code. The latest threat date is on a poster on the wall.",
+          clueTitle: "Senior analyst's note",
+          clueBody: "ANALYST'S CONCLUSION:<br><br>\"The hardest threats to manage are the ones <strong>furthest outside the business</strong>. We can fire bad employees. We can outcompete a rival. But interest rates? Inflation? New laws? <em>We are passengers.</em><br><br>The macro environment is the one to fear most.\"",
+          takeaway: "MACRO is least controllable"
+        }
       ],
-      placeholder: "— environment —",
-      finalQuestion: "<em>Final question.</em> Which environment has the business the <strong>least</strong> control over?",
-      finalAnswer: "macro",
-      finalPlaceholder: "ENVIRONMENT",
+      finalGate: {
+        lockedTitle: "Threat console — locked",
+        lockedBody: "Investigate every source in the control room before classifying threats.",
+        unlockedTitle: "Threat console — sort the alerts",
+        unlockedBody: "All threats logged. Now classify each one into the correct environment, then identify which is least controllable."
+      },
+      puzzle: {
+        kind: "dropdownsWithFinal",
+        prompt: "Sort each threat into Micro, Market, or Macro. Then answer the final question.",
+        placeholder: "— environment —",
+        questions: [
+          { text: "<em>1.</em> Unreliable employees affecting daily productivity.", options: ["Micro","Market","Macro"], answer: "Micro" },
+          { text: "<em>2.</em> A new competitor has opened two blocks away.", options: ["Micro","Market","Macro"], answer: "Market" },
+          { text: "<em>3.</em> Inflation has risen sharply this quarter.", options: ["Micro","Market","Macro"], answer: "Macro" },
+          { text: "<em>4.</em> A key supplier is repeatedly delaying stock deliveries.", options: ["Micro","Market","Macro"], answer: "Market" },
+          { text: "<em>5.</em> Poor management decisions have hurt morale.", options: ["Micro","Market","Macro"], answer: "Micro" },
+          { text: "<em>6.</em> The Reserve Bank has raised interest rates.", options: ["Micro","Market","Macro"], answer: "Macro" },
+          { text: "<em>7.</em> Customer tastes have shifted to healthier options.", options: ["Micro","Market","Macro"], answer: "Market" },
+          { text: "<em>8.</em> Production equipment is outdated and breaking down.", options: ["Micro","Market","Macro"], answer: "Micro" },
+          { text: "<em>9.</em> New national labour legislation has been passed.", options: ["Micro","Market","Macro"], answer: "Macro" }
+        ],
+        finalQuestion: "<em>Final question.</em> Which environment has the business the <strong>least</strong> control over?",
+        finalPlaceholder: "ENVIRONMENT",
+        finalAnswer: "macro"
+      },
       unlockCode: "MACRO", unlockDisplay: "M A C R O",
       unlockLabel: "Control systems online • Keyword recovered",
       fbCorrect: "✓ Environment stabilised. Keyword confirmed.",
       fbBlank: "✗ Classify all nine threats first.",
       fbWrongClassify: "✗ At least one threat is in the wrong environment. Remember: micro = inside, market = surrounding, macro = society-wide.",
       fbWrongFinal: "✗ Classifications look right, but the final answer is wrong. Which environment is the business powerless to change?",
+      fbCluesIncomplete: "✗ Investigate every source in the control room before classifying.",
       nextLabel: "Next: Ethics Tribunal →",
       buttonLabel: "Stabilise Environment"
     },
     {
       id: "room4", key: "ethics", number: "DEPT 04", name: "Ethics Tribunal",
-      type: "dropdowns",
-      scenario: "Investigators have filed four complaints against the company. For each one, classify it as <strong>Illegal, Unethical only,</strong> or <strong>Both unethical and illegal</strong>. Correct rulings decode the exit keyword.",
-      sectionHeading: "Case Files",
-      questions: [
-        { text: "<em>Case 1.</em> A restaurant advertises a meal as beef but serves cheaper horse meat in its place.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Both unethical and illegal" },
-        { text: "<em>Case 2.</em> A worker is forced to work overtime without being paid the required overtime rate.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Both unethical and illegal" },
-        { text: "<em>Case 3.</em> A manager is consistently rude to junior staff but does not break a written law.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Unethical only" },
-        { text: "<em>Case 4.</em> Expiry dates are deliberately hidden from consumers on food packaging.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Both unethical and illegal" }
+      type: "escapeRoom",
+      scene: "tribunal",
+      scenario: "The ethics tribunal antechamber. Four complaint files have been filed against the company — but the registrar fled mid-shift, scattering them. <strong>Find each complaint</strong>, then rule on whether each is illegal, unethical only, or both.",
+      sectionHeading: "The Tribunal Antechamber",
+      hotspots: [
+        {
+          id: "case1",
+          label: "File on judge's bench",
+          clueTitle: "Complaint #1 — Consumer fraud",
+          clueBody: "FILING: Mrs P. Mokoena vs. Restaurant XYZ<br><br>\"I ordered the beef stew. The kitchen knowingly substituted <strong>cheaper horse meat</strong>, advertised it as beef, and charged the beef price.\"<br><br><em>Reference: Consumer Protection Act §41 — false advertising.</em>",
+          takeaway: "Misleading advertising = breaks the LAW (CPA) AND is unethical"
+        },
+        {
+          id: "case2",
+          label: "File under the chair",
+          clueTitle: "Complaint #2 — Labour dispute",
+          clueBody: "FILING: Anonymous worker vs. Acme Manufacturing<br><br>\"My supervisor forced me to work overtime for three months without paying the legally required <strong>1.5x overtime rate</strong>. When I complained, I was threatened.\"<br><br><em>Reference: Basic Conditions of Employment Act §10.</em>",
+          takeaway: "Unpaid overtime = breaks the LAW (BCEA) AND is unethical"
+        },
+        {
+          id: "case3",
+          label: "File on noticeboard",
+          clueTitle: "Complaint #3 — Workplace conduct",
+          clueBody: "FILING: J. Naidoo vs. Acme Manufacturing<br><br>\"My manager is consistently rude, dismissive and demeaning to junior staff. He undermines morale daily. <strong>However, no specific law has been broken.</strong>\"<br><br><em>Reference: Internal HR policy review.</em>",
+          takeaway: "Rude conduct without law-breaking = UNETHICAL only"
+        },
+        {
+          id: "case4",
+          label: "Locked evidence box",
+          locked: true,
+          code: "1986",
+          codePromptTitle: "Sealed evidence box",
+          codePrompt: "A heavy evidence box on the registrar's desk, sealed with a 4-digit combination. The box is labelled with the year the Consumer Protection Act was first proposed in South Africa. (Hint: 1986.)",
+          codeLabel: "ENTER 4-DIGIT YEAR",
+          codeWrongFb: "✗ Wrong year. The CPA was proposed in 1986.",
+          clueTitle: "Complaint #4 — Consumer deception",
+          clueBody: "FILING: SAFDA vs. Acme Foods<br><br>\"The company has been <strong>deliberately concealing expiry dates</strong> on packaged food, exposing consumers to unsafe products.\"<br><br><em>Reference: Consumer Protection Act §24 + Foodstuffs Act §3.</em>",
+          takeaway: "Hiding expiry dates = breaks the LAW AND is unethical"
+        }
       ],
-      placeholder: "— your ruling —",
+      finalGate: {
+        lockedTitle: "Tribunal courtroom — sealed",
+        lockedBody: "Find every complaint file before the tribunal will hear your rulings.",
+        unlockedTitle: "Tribunal courtroom — issue rulings",
+        unlockedBody: "All four complaints recovered. Now issue your ruling on each: is the conduct illegal, unethical only, or both?"
+      },
+      puzzle: {
+        kind: "dropdowns",
+        prompt: "For each complaint, classify the conduct.",
+        placeholder: "— your ruling —",
+        questions: [
+          { text: "<em>Case 1.</em> A restaurant advertises a meal as beef but serves cheaper horse meat in its place.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Both unethical and illegal" },
+          { text: "<em>Case 2.</em> A worker is forced to work overtime without being paid the required overtime rate.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Both unethical and illegal" },
+          { text: "<em>Case 3.</em> A manager is consistently rude to junior staff but does not break a written law.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Unethical only" },
+          { text: "<em>Case 4.</em> Expiry dates are deliberately hidden from consumers on food packaging.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Both unethical and illegal" }
+        ]
+      },
       unlockCode: "LAW", unlockDisplay: "L A W",
       unlockLabel: "Compliance cleared • Keyword recovered",
       fbCorrect: "✓ Rulings upheld. Compliance restored.",
       fbBlank: "✗ Rule on every case before submitting.",
       fbWrong: "✗ At least one ruling is wrong. Remember: illegal = breaks the law; unethical = wrong but not illegal; both = breaks the law AND is morally wrong.",
+      fbCluesIncomplete: "✗ Find every complaint file before issuing rulings.",
       nextLabel: "Next: HR Office →",
-      buttonLabel: "Issue Ruling"
+      buttonLabel: "Issue Rulings"
     },
     {
       id: "room5", key: "hr", number: "DEPT 05", name: "Human Resources",
-      type: "ordering",
-      scenario: "HR is paralysed. Six recruitment steps have been scrambled — no one can be hired until they're restored to the correct sequence. Place each step in the right order using the ↑ ↓ controls, then confirm.",
-      sectionHeading: "Recruitment & Selection Sequence",
-      /* steps listed in correct order; game scrambles them deterministically */
-      steps: [
-        "Draw up a job description",
-        "Advertise the vacancy",
-        "Screen applications",
-        "Conduct interviews",
-        "Appoint the suitable candidate",
-        "Induct the new employee"
+      type: "escapeRoom",
+      scene: "hr",
+      scenario: "The HR office is chaos — the entire recruitment file has been knocked over. Six different documents from the recruitment process are scattered across the room. <strong>Find each document</strong>, then arrange the recruitment process in the correct order.",
+      sectionHeading: "The HR Office",
+      hotspots: [
+        {
+          id: "jd",
+          label: "Document on desk",
+          clueTitle: "Document found: Job Description",
+          clueBody: "JOB DESCRIPTION — Operations Manager<br><br>Duties: oversee daily operations, manage 5 staff, report to CEO.<br>Required skills: 5+ years management experience.<br>Reports to: Chief Operations Officer.<br><br><em>This is what gets written FIRST — before you can advertise, you must define the role.</em>",
+          takeaway: "STEP 1: Draw up a job description"
+        },
+        {
+          id: "advert",
+          label: "Poster on noticeboard",
+          clueTitle: "Document found: Vacancy Advert",
+          clueBody: "WE ARE HIRING<br><br>Operations Manager — Acme Manufacturing<br>Closing date: end of month.<br>Apply with CV to: hr@acme.co.za<br><br><em>Once you know what role you need (the JD), you advertise it. This goes second.</em>",
+          takeaway: "STEP 2: Advertise the vacancy"
+        },
+        {
+          id: "screen",
+          label: "Pile of CVs in tray",
+          clueTitle: "Document found: Screening Sheet",
+          clueBody: "APPLICATION SCREENING — 47 candidates<br><br>· Met minimum criteria: 12 candidates<br>· Strong fit: 6 candidates<br>· Not qualified: 35 (rejected)<br><br><em>Comes after applications arrive — you can't screen what hasn't been submitted.</em>",
+          takeaway: "STEP 3: Screen applications"
+        },
+        {
+          id: "interv",
+          label: "Schedule on whiteboard",
+          clueTitle: "Document found: Interview Schedule",
+          clueBody: "INTERVIEWS — Operations Manager<br><br>· Tuesday 10am — Mr Khumalo<br>· Tuesday 2pm — Ms van der Merwe<br>· Wednesday 10am — Mr Patel<br><br><em>Only the screened-in candidates are interviewed.</em>",
+          takeaway: "STEP 4: Conduct interviews"
+        },
+        {
+          id: "appoint",
+          label: "Letter in cabinet",
+          clueTitle: "Document found: Appointment Letter",
+          clueBody: "Dear Mr Khumalo,<br><br>Following your successful interview, we are pleased to offer you the position of <strong>Operations Manager</strong> at Acme Manufacturing.<br><br>Your start date is the 1st of next month.<br><br><em>The interview produced a winner. Now they're appointed.</em>",
+          takeaway: "STEP 5: Appoint the suitable candidate"
+        },
+        {
+          id: "induct",
+          label: "Binder on coffee table",
+          clueTitle: "Document found: Induction Pack",
+          clueBody: "WELCOME TO ACME — Induction Pack<br><br>Day 1: company tour, IT setup, safety briefing.<br>Week 1: meet your team, learn our systems.<br>Month 1: first review.<br><br><em>The new appointee needs to be brought into the company. This is the LAST step.</em>",
+          takeaway: "STEP 6: Induct the new employee"
+        }
       ],
-      scrambledIndices: [1, 5, 0, 3, 2, 4],
+      finalGate: {
+        lockedTitle: "HR archive — sealed",
+        lockedBody: "Six recruitment documents are scattered around the office. Find them all before you can reassemble the process.",
+        unlockedTitle: "HR archive — reassemble the process",
+        unlockedBody: "All six documents recovered. Now arrange them in the correct recruitment-process order, from first step to last."
+      },
+      puzzle: {
+        kind: "ordering",
+        prompt: "Arrange the recruitment steps in the correct order.",
+        steps: [
+          "Draw up a job description",
+          "Advertise the vacancy",
+          "Screen applications",
+          "Conduct interviews",
+          "Appoint the suitable candidate",
+          "Induct the new employee"
+        ],
+        scrambledIndices: [1, 5, 0, 3, 2, 4]
+      },
       unlockCode: "HIREME", unlockDisplay: "H I R E M E",
       unlockLabel: "HR systems reopened • Keyword recovered",
       fbCorrect: "✓ Recruitment process reassembled correctly.",
       fbWrong: "✗ Sequence is not right yet. Think about the logical flow — what has to exist before you can advertise? Interview before or after screening?",
+      fbCluesIncomplete: "✗ Find all six recruitment documents in the room before reassembling them.",
       nextLabel: "Next: Finance Vault →",
       buttonLabel: "Confirm Sequence"
     },
     {
       id: "room6", key: "finance", number: "DEPT 06", name: "Finance Vault",
-      type: "finance",
-      scenario: "The finance vault opens only for consultants who can <strong>interpret</strong> numbers, not just calculate them. Three quick questions. Each correct answer gives a digit of the final vault code.",
-      sectionHeading: "Financial Interpretation",
-      q1Text: "<em>Q1.</em> Current assets = R60 000. Current liabilities = R30 000. Calculate the <strong>current ratio</strong> (in the form X:1). What is X?",
-      q1Answer: "2",
-      q2Text: "<em>Q2.</em> Gross profit has increased from R100 000 to R180 000. Pick the <strong>digit</strong> that matches how this impacts profitability.",
-      q2Options: [
-        { label: "Profitability declined (0)", value: "0" },
-        { label: "Profitability stayed flat (4)", value: "4" },
-        { label: "Profitability improved significantly (8)", value: "8" }
+      type: "escapeRoom",
+      scene: "finance",
+      scenario: "The finance office leads to a heavy steel vault. The CFO has fled, leaving raw financial data scattered across the office. <strong>Find every figure in the room</strong>, then calculate and interpret to open the vault.",
+      sectionHeading: "The Finance Office",
+      hotspots: [
+        {
+          id: "ledger",
+          label: "Asset ledger",
+          clueTitle: "Asset ledger entry",
+          clueBody: "BALANCE SHEET — CURRENT ASSETS<br><br>· Cash on hand: R12,000<br>· Inventory: R28,000<br>· Accounts receivable: R20,000<br><br><strong>TOTAL CURRENT ASSETS: R60,000</strong><br><br><em>Stamp: VERIFIED 30/06.</em>",
+          takeaway: "Current assets = R60,000"
+        },
+        {
+          id: "liabilities",
+          label: "Liability statement",
+          clueTitle: "Current liabilities statement",
+          clueBody: "BALANCE SHEET — CURRENT LIABILITIES<br><br>· Accounts payable: R18,000<br>· Short-term loan: R10,000<br>· Tax owed: R2,000<br><br><strong>TOTAL CURRENT LIABILITIES: R30,000</strong><br><br><em>Tip pinned beside it: \"Current ratio = current assets ÷ current liabilities. Anything above 2:1 is comfortable.\"</em>",
+          takeaway: "Current liabilities = R30,000 → Current ratio = 60,000 ÷ 30,000 = 2:1"
+        },
+        {
+          id: "profit",
+          label: "Profit chart",
+          clueTitle: "Gross profit chart",
+          clueBody: "GROSS PROFIT — last two years<br><br>· Last year: R100,000<br>· This year: <strong>R180,000</strong><br><br>An 80% jump in gross profit, with sales volume only up 10%. <em>Margins have improved significantly.</em>",
+          takeaway: "Gross profit nearly doubled — profitability improved SIGNIFICANTLY"
+        },
+        {
+          id: "expenses",
+          label: "Expense report",
+          clueTitle: "Operating expense report",
+          clueBody: "OPERATING EXPENSES — alarming trend<br><br>· Last year: R40,000<br>· This year: <strong>R80,000</strong> (DOUBLED)<br><br>Sales volume: <em>unchanged.</em><br><br><em>CFO note: \"This will eat into net profit dramatically. Watch closely.\"</em>",
+          takeaway: "Expenses doubled while sales stayed flat → net profit will FALL"
+        },
+        {
+          id: "vault",
+          label: "Vault keypad",
+          locked: true,
+          code: "2025",
+          codePromptTitle: "The vault — final lock",
+          codePrompt: "The main steel vault, secured with a 4-digit annual code. A faded sticker on the corner reads: \"Code = current financial year.\" (The current year is 2025.)",
+          codeLabel: "ENTER 4-DIGIT YEAR",
+          codeWrongFb: "✗ Wrong year. Try the current financial year.",
+          clueTitle: "Inside the vault — interpretation key",
+          clueBody: "INTERPRETATION KEY (CFO's instructions):<br><br>1. <strong>Current ratio</strong> at 2:1 means the business can cover its short-term debts twice over — financially <em>healthy and stable</em>.<br>2. Rising <strong>gross profit</strong> means more money kept from each sale — <em>profitability improved.</em><br>3. Rising <strong>expenses</strong> with flat sales means less left over — <em>net profit declines.</em><br><br>Apply these three rules to open the final vault gate.",
+          takeaway: "These three interpretation rules are the answers to the final puzzle"
+        }
       ],
-      q2Answer: "8",
-      q3Text: "<em>Q3.</em> Operating expenses have doubled while sales stayed the same. Pick the <strong>digit</strong> that matches the likely outcome.",
-      q3Options: [
-        { label: "Higher net profit (2)", value: "2" },
-        { label: "Lower net profit (4)", value: "4" },
-        { label: "No effect on net profit (6)", value: "6" }
-      ],
-      q3Answer: "4",
+      finalGate: {
+        lockedTitle: "Vault gate — sealed",
+        lockedBody: "Find every figure in the finance office before attempting to open the vault.",
+        unlockedTitle: "Vault gate — apply the numbers",
+        unlockedBody: "All financial data recovered. Now apply what you've learned: calculate the current ratio, then interpret the trends."
+      },
+      puzzle: {
+        kind: "finance",
+        prompt: "Apply the data you've collected to answer all three questions.",
+        q1Text: "<em>Q1.</em> Current assets = R60,000. Current liabilities = R30,000. Calculate the <strong>current ratio</strong> (in the form X:1). What is X?",
+        q1Answer: "2",
+        q2Text: "<em>Q2.</em> Gross profit has increased from R100,000 to R180,000. Pick the <strong>digit</strong> that matches how this impacts profitability.",
+        q2Options: [
+          { value: "0", label: "Profitability declined (0)" },
+          { value: "4", label: "Profitability stayed flat (4)" },
+          { value: "8", label: "Profitability improved significantly (8)" }
+        ],
+        q2Answer: "8",
+        q3Text: "<em>Q3.</em> Operating expenses have doubled while sales stayed the same. Pick the <strong>digit</strong> that matches the likely outcome.",
+        q3Options: [
+          { value: "2", label: "Higher net profit (2)" },
+          { value: "4", label: "Lower net profit (4)" },
+          { value: "6", label: "No effect on net profit (6)" }
+        ],
+        q3Answer: "4"
+      },
       unlockCode: "284", unlockDisplay: "2 8 4",
       unlockLabel: "Treasury access granted • Code recovered",
       fbCorrect: "✓ Interpretation correct. Treasury unlocked.",
       fbBlank: "✗ All three questions must be answered.",
       fbWrong: "✗ At least one answer is wrong. Recalculate the ratio (60 000 ÷ 30 000) and think carefully about what increases profit vs. reduces it.",
-      nextLabel: "Enter Final Vault →",
+      fbCluesIncomplete: "✗ Find all financial documents in the room before attempting the vault.",
+      nextLabel: "Open Final Vault →",
       buttonLabel: "Open the Vault"
     }
   ],
@@ -1353,12 +1616,7 @@ function restart() {
   document.querySelectorAll('.unlock-reveal').forEach(u => u.classList.remove('show'));
   document.querySelectorAll('[id$="next"]').forEach(b => { if (b.tagName === 'BUTTON') b.disabled = true; });
   document.querySelectorAll('.option-btn.selected').forEach(o => o.classList.remove('selected'));
-  // reset ordering rooms
-  CONTENT.rooms.filter(r => r.type === 'ordering').forEach(r => {
-    r._currentOrder = r.scrambledIndices.slice();
-    refreshOrderingList(r);
-  });
-  // reset escape rooms
+  // reset escape rooms (this re-renders the scene and locks the gate)
   CONTENT.rooms.filter(r => r.type === 'escapeRoom').forEach(r => {
     renderEscapeRoom(r);
   });
@@ -1539,7 +1797,7 @@ function renderEscapeRoom(room) {
   ).join('');
 
   // Build the SVG boardroom scene (template-driven for the governance room)
-  const sceneSvg = buildBoardroomScene(room);
+  const sceneSvg = buildScene(room);
 
   // Final gate (starts locked)
   const gateHtml = `
@@ -1569,6 +1827,19 @@ function renderEscapeRoom(room) {
   body.querySelectorAll('.hotspot').forEach(hs => {
     hs.addEventListener('click', () => openHotspot(room, hs.dataset.hotspotId));
   });
+}
+
+function buildScene(room) {
+  const sceneFns = {
+    boardroom: buildBoardroomScene,
+    marketing: buildMarketingScene,
+    control: buildControlScene,
+    tribunal: buildTribunalScene,
+    hr: buildHRScene,
+    finance: buildFinanceScene
+  };
+  const fn = sceneFns[room.scene] || buildBoardroomScene;
+  return fn(room);
 }
 
 function buildBoardroomScene(room) {
@@ -1795,6 +2066,705 @@ function buildBoardroomScene(room) {
   `;
 }
 
+function buildMarketingScene(room) {
+  return `
+    <svg class="scene-svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="mWallG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1A1F2E"/>
+          <stop offset="100%" stop-color="#0F1320"/>
+        </linearGradient>
+        <linearGradient id="mFloorG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#161C2B"/>
+          <stop offset="100%" stop-color="#0A0E18"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="1000" height="380" fill="url(#mWallG)"/>
+      <rect x="0" y="380" width="1000" height="220" fill="url(#mFloorG)"/>
+      <line x1="0" y1="380" x2="1000" y2="380" stroke="#2A3244" stroke-width="0.5"/>
+
+      <!-- Decorative: hanging pendant lamp -->
+      <line x1="500" y1="0" x2="500" y2="60" stroke="#3D4860" stroke-width="1"/>
+      <ellipse cx="500" cy="70" rx="18" ry="8" fill="#F5A623" opacity="0.7"/>
+      <ellipse cx="500" cy="68" rx="14" ry="5" fill="#FFD66E"/>
+
+      <!-- BRIEF on desk (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="brief">
+        <rect class="hit-zone" x="60" y="395" width="160" height="100" rx="2"/>
+        <!-- Folder -->
+        <rect x="70" y="410" width="140" height="80" fill="#3D4860" stroke="#5A6478" stroke-width="2" rx="2"/>
+        <rect x="80" y="420" width="120" height="60" fill="#F0EAD8"/>
+        <text x="90" y="440" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">CONFIDENTIAL</text>
+        <text x="90" y="455" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">CLIENT BRIEF</text>
+        <text x="90" y="468" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Acme Restaurants</text>
+        <!-- Stamp -->
+        <circle cx="180" cy="450" r="14" fill="none" stroke="#EF4444" stroke-width="2"/>
+        <text x="180" y="453" text-anchor="middle" fill="#EF4444" style="font-family: 'Bebas Neue',sans-serif; font-size:8px;">URGENT</text>
+        <circle class="hot-marker" cx="210" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="210" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="210" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="140" y="395" text-anchor="middle">Client brief</text>
+      </g>
+
+      <!-- TV broadcast schedule (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="schedule">
+        <rect class="hit-zone" x="50" y="60" width="280" height="180" rx="2"/>
+        <rect x="60" y="70" width="260" height="160" fill="#0A0E18" stroke="#3D4860" stroke-width="3"/>
+        <rect x="70" y="80" width="240" height="140" fill="#1F2A3A"/>
+        <text x="80" y="100" fill="#22D3EE" style="font-family: 'JetBrains Mono',monospace; font-size:11px;">KIDSZONE</text>
+        <text x="80" y="120" fill="#F5A623" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">06:00 - Cartoon Hour</text>
+        <text x="80" y="138" fill="#F5A623" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">07:00 - Sing Time</text>
+        <text x="80" y="156" fill="#F5A623" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">08:00 - Kids News</text>
+        <text x="80" y="174" fill="#FFD66E" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">[AD: STEAKHOUSE]</text>
+        <text x="80" y="192" fill="#F5A623" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">10:00 - Toy Show</text>
+        <text x="80" y="210" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">SPEND: R450,000</text>
+        <circle class="hot-marker" cx="320" cy="60" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="320" y="64" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="320" y="66" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="190" y="55" text-anchor="middle">TV broadcast schedule</text>
+      </g>
+
+      <!-- MENU sample (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="menu">
+        <rect class="hit-zone" x="380" y="395" width="140" height="105" rx="2"/>
+        <!-- Crumpled paper menu -->
+        <polygon points="395,410 510,408 512,490 390,492" fill="#F0EAD8" stroke="#8B92A7" stroke-width="1"/>
+        <text x="450" y="430" text-anchor="middle" fill="#3A2A1A" style="font-family: 'Lora',serif; font-size:10px; font-style:italic;">— Menu —</text>
+        <line x1="400" y1="438" x2="500" y2="438" stroke="#3A2A1A" stroke-width="0.5"/>
+        <text x="400" y="450" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Wagyu beef ........R2</text>
+        <text x="400" y="462" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Cabernet ..........R5</text>
+        <text x="400" y="474" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Foie gras .........R3</text>
+        <!-- Coffee stain -->
+        <ellipse cx="475" cy="465" rx="22" ry="14" fill="#3A2A1A" opacity="0.4"/>
+        <ellipse cx="475" cy="465" rx="16" ry="9" fill="#3A2A1A" opacity="0.3"/>
+        <circle class="hot-marker" cx="510" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="510" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="510" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="450" y="395" text-anchor="middle">Menu sample</text>
+      </g>
+
+      <!-- PRICE LIST on wall (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="pricelist">
+        <rect class="hit-zone" x="380" y="60" width="200" height="160" rx="2"/>
+        <rect x="390" y="70" width="180" height="140" fill="#FCEBA0" stroke="#5A4A2A" stroke-width="2"/>
+        <text x="480" y="92" text-anchor="middle" fill="#3A2A1A" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; letter-spacing:0.1em;">GRAND OPENING</text>
+        <line x1="410" y1="100" x2="550" y2="100" stroke="#3A2A1A" stroke-width="1"/>
+        <text x="410" y="118" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">Wagyu combo  R2</text>
+        <text x="410" y="135" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">Cabernet bot R5</text>
+        <text x="410" y="152" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">Dessert      R1</text>
+        <text x="410" y="170" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">Coffee       R0.50</text>
+        <text x="480" y="195" text-anchor="middle" fill="#EF4444" style="font-family: 'Bebas Neue',sans-serif; font-size:11px;">CHEAPEST IN TOWN!</text>
+        <!-- Pin -->
+        <circle cx="480" cy="78" r="3" fill="#EF4444"/>
+        <circle class="hot-marker" cx="570" cy="60" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="570" y="64" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="570" y="66" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="480" y="55" text-anchor="middle">Price list</text>
+      </g>
+
+      <!-- SAFE under desk - LOCKED HOTSPOT -->
+      <g class="hotspot locked" data-hotspot-id="safe">
+        <rect class="hit-zone" x="700" y="220" width="200" height="180" rx="2"/>
+        <!-- Safe body -->
+        <rect x="710" y="230" width="180" height="160" fill="#3D4860" stroke="#5A6478" stroke-width="3" rx="3"/>
+        <rect x="720" y="240" width="160" height="140" fill="#2A3244" stroke="#5A6478" stroke-width="1.5"/>
+        <!-- Engraving -->
+        <text x="800" y="260" text-anchor="middle" fill="#F5A623" style="font-family: 'Bebas Neue',sans-serif; font-size:10px; letter-spacing:0.2em;">J.R. PORTFOLIO</text>
+        <!-- Year date -->
+        <text x="800" y="276" text-anchor="middle" fill="#8B92A7" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">EST. 1985</text>
+        <!-- Combination dial -->
+        <circle cx="800" cy="320" r="32" fill="#1F1610" stroke="#5A6478" stroke-width="2"/>
+        <circle cx="800" cy="320" r="24" fill="#3D4860"/>
+        <circle cx="800" cy="320" r="3" fill="#F5A623"/>
+        <line x1="800" y1="320" x2="820" y2="305" stroke="#F5A623" stroke-width="2"/>
+        <!-- Dial markings -->
+        <text x="800" y="298" text-anchor="middle" fill="#8B92A7" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">0</text>
+        <!-- Lock LED -->
+        <circle cx="780" cy="260" r="4" fill="#EF4444">
+          <animate attributeName="opacity" values="1;0.4;1" dur="1.4s" repeatCount="indefinite"/>
+        </circle>
+        <circle class="hot-marker" cx="890" cy="225" r="12" fill="#EF4444"/>
+        <text class="hot-marker" x="890" y="229" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">!</text>
+        <text class="hot-checkmark" x="890" y="231" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="800" y="218" text-anchor="middle">Locked portfolio (Hint: EST. year)</text>
+      </g>
+
+      <!-- Desk surface -->
+      <rect x="40" y="475" width="280" height="20" fill="#3A2A1A" stroke="#1F1610"/>
+      <rect x="700" y="395" width="220" height="15" fill="#3A2A1A" stroke="#1F1610"/>
+
+      <radialGradient id="mVig" cx="0.5" cy="0.5" r="0.7">
+        <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+      </radialGradient>
+      <rect x="0" y="0" width="1000" height="600" fill="url(#mVig)" pointer-events="none"/>
+    </svg>
+  `;
+}
+
+function buildControlScene(room) {
+  return `
+    <svg class="scene-svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="cWallG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0F1A2E"/>
+          <stop offset="100%" stop-color="#060E1A"/>
+        </linearGradient>
+        <linearGradient id="cFloorG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0A1220"/>
+          <stop offset="100%" stop-color="#040810"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="1000" height="380" fill="url(#cWallG)"/>
+      <rect x="0" y="380" width="1000" height="220" fill="url(#cFloorG)"/>
+      <line x1="0" y1="380" x2="1000" y2="380" stroke="#1F2A3A" stroke-width="0.5"/>
+      <!-- Server rack glow -->
+      <line x1="100" y1="0" x2="100" y2="600" stroke="#22D3EE" stroke-width="0.3" opacity="0.3"/>
+      <line x1="900" y1="0" x2="900" y2="600" stroke="#22D3EE" stroke-width="0.3" opacity="0.3"/>
+
+      <!-- NEWS TICKER on wall (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="ticker">
+        <rect class="hit-zone" x="50" y="40" width="380" height="130" rx="2"/>
+        <rect x="60" y="50" width="360" height="110" fill="#0A0E18" stroke="#22D3EE" stroke-width="2"/>
+        <rect x="70" y="60" width="340" height="90" fill="#0F1A2E"/>
+        <rect x="70" y="60" width="340" height="14" fill="#EF4444"/>
+        <text x="240" y="71" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:10px; letter-spacing:0.15em;">LIVE — BREAKING ECONOMIC NEWS</text>
+        <text x="80" y="92" fill="#22D3EE" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">▸ INFLATION RISES SHARPLY</text>
+        <text x="80" y="110" fill="#22D3EE" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">▸ RESERVE BANK +0.5% RATE HIKE</text>
+        <text x="80" y="128" fill="#22D3EE" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">▸ NEW LABOUR LAW PASSED</text>
+        <text x="80" y="146" fill="#F5A623" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">▸ ALL OF THE ABOVE: SOCIETY-WIDE</text>
+        <circle class="hot-marker" cx="420" cy="50" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="420" y="54" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="420" y="56" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="240" y="35" text-anchor="middle">News ticker</text>
+      </g>
+
+      <!-- LOCKED MONITOR (HOTSPOT) -->
+      <g class="hotspot locked" data-hotspot-id="monitor">
+        <rect class="hit-zone" x="500" y="40" width="280" height="190" rx="2"/>
+        <rect x="510" y="50" width="260" height="170" fill="#0A0E18" stroke="#3D4860" stroke-width="3"/>
+        <rect x="520" y="60" width="240" height="150" fill="#1F1610" opacity="0.7"/>
+        <!-- Locked overlay -->
+        <rect x="540" y="100" width="200" height="60" fill="#2A1F14" stroke="#EF4444" stroke-width="2"/>
+        <text x="640" y="125" text-anchor="middle" fill="#EF4444" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; letter-spacing:0.2em;">LOCKED</text>
+        <text x="640" y="145" text-anchor="middle" fill="#8B92A7" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">PIN required</text>
+        <!-- Sticky note hint -->
+        <rect x="660" y="180" width="80" height="50" fill="#FCEBA0" transform="rotate(-3 700 205)"/>
+        <text x="700" y="198" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;" transform="rotate(-3 700 205)">PIN = date of</text>
+        <text x="700" y="210" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;" transform="rotate(-3 700 205)">latest threat</text>
+        <text x="700" y="222" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;" transform="rotate(-3 700 205)">report (DDMM)</text>
+        <!-- Threat date poster (visible separately) -->
+        <circle class="hot-marker" cx="780" cy="50" r="12" fill="#EF4444"/>
+        <text class="hot-marker" x="780" y="54" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">!</text>
+        <text class="hot-checkmark" x="780" y="56" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="640" y="35" text-anchor="middle">Locked monitor</text>
+      </g>
+
+      <!-- Threat report poster (just decoration showing the date) -->
+      <g opacity="0.95">
+        <rect x="820" y="60" width="100" height="120" fill="#FCEBA0" stroke="#5A4A2A" stroke-width="1.5" transform="rotate(-2 870 120)"/>
+        <text x="870" y="82" text-anchor="middle" fill="#EF4444" style="font-family: 'Bebas Neue',sans-serif; font-size:11px; letter-spacing:0.1em;" transform="rotate(-2 870 120)">THREAT</text>
+        <text x="870" y="98" text-anchor="middle" fill="#EF4444" style="font-family: 'Bebas Neue',sans-serif; font-size:11px; letter-spacing:0.1em;" transform="rotate(-2 870 120)">REPORT</text>
+        <line x1="830" y1="105" x2="910" y2="105" stroke="#3A2A1A" stroke-width="0.5" transform="rotate(-2 870 120)"/>
+        <text x="870" y="125" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:8px;" transform="rotate(-2 870 120)">Filed:</text>
+        <text x="870" y="143" text-anchor="middle" fill="#3A2A1A" style="font-family: 'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.15em;" transform="rotate(-2 870 120)">03/12</text>
+        <text x="870" y="162" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:6px;" transform="rotate(-2 870 120)">Confidential</text>
+      </g>
+
+      <!-- HR CLIPBOARD (HOTSPOT) on table -->
+      <g class="hotspot" data-hotspot-id="internal">
+        <rect class="hit-zone" x="100" y="395" width="180" height="120" rx="2"/>
+        <!-- Clipboard -->
+        <rect x="115" y="410" width="150" height="100" fill="#3A2A1A" stroke="#1F1610" stroke-width="2" rx="3"/>
+        <rect x="125" y="420" width="130" height="80" fill="#F0EAD8"/>
+        <rect x="170" y="404" width="40" height="14" fill="#5A4A2A" rx="2"/>
+        <text x="135" y="438" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">HR HANDOVER</text>
+        <text x="135" y="452" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">- Sick employees</text>
+        <text x="135" y="464" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">- Bad managers</text>
+        <text x="135" y="476" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">- Old equipment</text>
+        <text x="135" y="492" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">INTERNAL</text>
+        <circle class="hot-marker" cx="270" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="270" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="270" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="190" y="395" text-anchor="middle">Staff clipboard</text>
+      </g>
+
+      <!-- SUPPLIER EMAIL (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="supplier">
+        <rect class="hit-zone" x="320" y="220" width="180" height="160" rx="2"/>
+        <!-- Tablet/printout -->
+        <rect x="335" y="235" width="150" height="130" fill="#FFFFFF" stroke="#3D4860" stroke-width="2"/>
+        <rect x="335" y="235" width="150" height="20" fill="#22D3EE"/>
+        <text x="410" y="248" text-anchor="middle" fill="#FFFFFF" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">EMAIL · INBOX</text>
+        <text x="345" y="270" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">From: Acme Suppliers</text>
+        <text x="345" y="282" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Subject: DELAY</text>
+        <line x1="345" y1="290" x2="475" y2="290" stroke="#5A6478" stroke-width="0.5"/>
+        <text x="345" y="304" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Stock will arrive 14</text>
+        <text x="345" y="316" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">days late.</text>
+        <text x="345" y="334" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">+ competitor opened</text>
+        <text x="345" y="346" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">+ tastes shifting</text>
+        <circle class="hot-marker" cx="490" cy="225" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="490" y="229" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="490" y="231" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="410" y="220" text-anchor="middle">Supplier email</text>
+      </g>
+
+      <!-- Console desk -->
+      <rect x="60" y="490" width="880" height="20" fill="#1F2A3A" stroke="#0F1320"/>
+      <!-- Console panel lights -->
+      <g>
+        <circle cx="600" cy="500" r="2" fill="#22D3EE"/>
+        <circle cx="615" cy="500" r="2" fill="#22D3EE"/>
+        <circle cx="630" cy="500" r="2" fill="#F5A623"/>
+        <circle cx="645" cy="500" r="2" fill="#22D3EE"/>
+      </g>
+
+      <radialGradient id="cVig" cx="0.5" cy="0.5" r="0.7">
+        <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+      </radialGradient>
+      <rect x="0" y="0" width="1000" height="600" fill="url(#cVig)" pointer-events="none"/>
+    </svg>
+  `;
+}
+
+function buildTribunalScene(room) {
+  return `
+    <svg class="scene-svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="tWallG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2A1F14"/>
+          <stop offset="100%" stop-color="#1A1208"/>
+        </linearGradient>
+        <linearGradient id="tFloorG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1A1208"/>
+          <stop offset="100%" stop-color="#0A0804"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="1000" height="380" fill="url(#tWallG)"/>
+      <rect x="0" y="380" width="1000" height="220" fill="url(#tFloorG)"/>
+      <line x1="0" y1="380" x2="1000" y2="380" stroke="#3A2A1A" stroke-width="0.5"/>
+      <!-- Wood paneling on walls -->
+      <line x1="200" y1="0" x2="200" y2="380" stroke="#3A2A1A" stroke-width="0.5" opacity="0.5"/>
+      <line x1="400" y1="0" x2="400" y2="380" stroke="#3A2A1A" stroke-width="0.5" opacity="0.5"/>
+      <line x1="600" y1="0" x2="600" y2="380" stroke="#3A2A1A" stroke-width="0.5" opacity="0.5"/>
+      <line x1="800" y1="0" x2="800" y2="380" stroke="#3A2A1A" stroke-width="0.5" opacity="0.5"/>
+
+      <!-- Scales of justice (decoration) -->
+      <g opacity="0.85">
+        <line x1="500" y1="60" x2="500" y2="180" stroke="#5A4A2A" stroke-width="3"/>
+        <line x1="430" y1="100" x2="570" y2="100" stroke="#5A4A2A" stroke-width="3"/>
+        <line x1="430" y1="100" x2="430" y2="125" stroke="#5A4A2A" stroke-width="1.5"/>
+        <line x1="570" y1="100" x2="570" y2="125" stroke="#5A4A2A" stroke-width="1.5"/>
+        <ellipse cx="430" cy="130" rx="22" ry="6" fill="#3D4860"/>
+        <ellipse cx="570" cy="130" rx="22" ry="6" fill="#3D4860"/>
+        <circle cx="500" cy="55" r="6" fill="#F5A623"/>
+      </g>
+
+      <!-- NOTICEBOARD (HOTSPOT - Case 3) -->
+      <g class="hotspot" data-hotspot-id="case3">
+        <rect class="hit-zone" x="50" y="60" width="200" height="180" rx="2"/>
+        <rect x="60" y="70" width="180" height="160" fill="#5A4A2A" stroke="#3A2A1A" stroke-width="3"/>
+        <rect x="70" y="80" width="160" height="140" fill="#3A2A1A"/>
+        <!-- Pinned papers -->
+        <rect x="85" y="92" width="60" height="50" fill="#F0EAD8" transform="rotate(-3 115 117)"/>
+        <text x="115" y="110" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:6px;" transform="rotate(-3 115 117)">CASE</text>
+        <text x="115" y="122" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:6px;" transform="rotate(-3 115 117)">#3</text>
+        <text x="115" y="134" text-anchor="middle" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:6px;" transform="rotate(-3 115 117)">CONDUCT</text>
+        <circle cx="115" cy="92" r="2" fill="#EF4444"/>
+        <!-- Decoy papers -->
+        <rect x="160" y="100" width="55" height="40" fill="#FCEBA0" opacity="0.6" transform="rotate(2 188 120)"/>
+        <rect x="100" y="160" width="55" height="40" fill="#F0EAD8" opacity="0.6" transform="rotate(-2 128 180)"/>
+        <rect x="170" y="170" width="50" height="35" fill="#FCEBA0" opacity="0.6" transform="rotate(4 195 188)"/>
+        <circle class="hot-marker" cx="240" cy="60" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="240" y="64" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="240" y="66" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="150" y="55" text-anchor="middle">Noticeboard</text>
+      </g>
+
+      <!-- JUDGE'S BENCH (HOTSPOT - Case 1) -->
+      <g class="hotspot" data-hotspot-id="case1">
+        <rect class="hit-zone" x="380" y="240" width="240" height="120" rx="2"/>
+        <!-- Bench -->
+        <rect x="390" y="260" width="220" height="100" fill="#3A2A1A" stroke="#1F1610" stroke-width="3"/>
+        <rect x="400" y="270" width="200" height="80" fill="#5A4A2A"/>
+        <!-- Open file on bench -->
+        <rect x="430" y="290" width="140" height="50" fill="#F0EAD8" stroke="#5A4A2A" stroke-width="1.5"/>
+        <text x="440" y="305" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">CASE #1</text>
+        <text x="440" y="318" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Mokoena vs XYZ</text>
+        <text x="440" y="332" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">false advertising</text>
+        <!-- Gavel -->
+        <rect x="588" y="298" width="20" height="6" fill="#3A2A1A" rx="1"/>
+        <rect x="595" y="290" width="6" height="22" fill="#5A4A2A"/>
+        <circle class="hot-marker" cx="610" cy="245" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="610" y="249" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="610" y="251" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="500" y="240" text-anchor="middle">Judge's bench</text>
+      </g>
+
+      <!-- WITNESS CHAIR with file beneath (HOTSPOT - Case 2) -->
+      <g class="hotspot" data-hotspot-id="case2">
+        <rect class="hit-zone" x="80" y="395" width="170" height="155" rx="2"/>
+        <!-- Chair -->
+        <rect x="115" y="430" width="80" height="80" fill="#3A2A1A" stroke="#1F1610" stroke-width="2"/>
+        <rect x="115" y="420" width="80" height="20" fill="#3A2A1A"/>
+        <rect x="125" y="510" width="6" height="30" fill="#3A2A1A"/>
+        <rect x="180" y="510" width="6" height="30" fill="#3A2A1A"/>
+        <!-- File peeking out from under -->
+        <rect x="105" y="540" width="100" height="14" fill="#F0EAD8" stroke="#5A4A2A" transform="rotate(-2 155 547)"/>
+        <text x="155" y="551" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:8px;" transform="rotate(-2 155 547)">CASE #2 — overtime</text>
+        <circle class="hot-marker" cx="240" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="240" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="240" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="155" y="395" text-anchor="middle">Witness chair</text>
+      </g>
+
+      <!-- LOCKED EVIDENCE BOX (HOTSPOT - Case 4) -->
+      <g class="hotspot locked" data-hotspot-id="case4">
+        <rect class="hit-zone" x="700" y="400" width="220" height="160" rx="2"/>
+        <!-- Box -->
+        <rect x="715" y="425" width="190" height="120" fill="#3A2A1A" stroke="#1F1610" stroke-width="3"/>
+        <rect x="715" y="425" width="190" height="20" fill="#5A4A2A"/>
+        <text x="810" y="438" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:10px; letter-spacing:0.2em;">EVIDENCE</text>
+        <!-- Lock with year hint -->
+        <rect x="780" y="465" width="60" height="40" fill="#1F1610" stroke="#5A6478" stroke-width="1.5"/>
+        <circle cx="810" cy="475" r="3" fill="#EF4444">
+          <animate attributeName="opacity" values="1;0.4;1" dur="1.4s" repeatCount="indefinite"/>
+        </circle>
+        <text x="810" y="495" text-anchor="middle" fill="#F5A623" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">CPA — proposed 1986</text>
+        <!-- Wax seal -->
+        <circle cx="730" cy="535" r="10" fill="#EF4444" opacity="0.8"/>
+        <text x="730" y="538" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:8px;">SEAL</text>
+        <circle class="hot-marker" cx="900" cy="408" r="12" fill="#EF4444"/>
+        <text class="hot-marker" x="900" y="412" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">!</text>
+        <text class="hot-checkmark" x="900" y="414" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="810" y="400" text-anchor="middle">Locked evidence box</text>
+      </g>
+
+      <radialGradient id="tVig" cx="0.5" cy="0.5" r="0.7">
+        <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+      </radialGradient>
+      <rect x="0" y="0" width="1000" height="600" fill="url(#tVig)" pointer-events="none"/>
+    </svg>
+  `;
+}
+
+function buildHRScene(room) {
+  return `
+    <svg class="scene-svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="hWallG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#161C2B"/>
+          <stop offset="100%" stop-color="#0F1320"/>
+        </linearGradient>
+        <linearGradient id="hFloorG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1A1F2E"/>
+          <stop offset="100%" stop-color="#0A0E18"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="1000" height="380" fill="url(#hWallG)"/>
+      <rect x="0" y="380" width="1000" height="220" fill="url(#hFloorG)"/>
+      <line x1="0" y1="380" x2="1000" y2="380" stroke="#2A3244" stroke-width="0.5"/>
+
+      <!-- DESK with JD (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="jd">
+        <rect class="hit-zone" x="40" y="395" width="180" height="120" rx="2"/>
+        <!-- Desk -->
+        <rect x="50" y="450" width="160" height="60" fill="#3A2A1A" stroke="#1F1610" stroke-width="2"/>
+        <!-- Document on desk -->
+        <rect x="75" y="415" width="110" height="50" fill="#F0EAD8" stroke="#5A4A2A" stroke-width="1.5" transform="rotate(-3 130 440)"/>
+        <text x="130" y="428" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;" transform="rotate(-3 130 440)">JOB DESCRIPTION</text>
+        <text x="130" y="440" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;" transform="rotate(-3 130 440)">Operations Manager</text>
+        <text x="130" y="452" text-anchor="middle" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;" transform="rotate(-3 130 440)">Duties &amp; skills...</text>
+        <circle class="hot-marker" cx="210" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="210" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="210" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="130" y="395" text-anchor="middle">Document on desk</text>
+      </g>
+
+      <!-- NOTICEBOARD with advert (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="advert">
+        <rect class="hit-zone" x="240" y="40" width="190" height="200" rx="2"/>
+        <rect x="250" y="50" width="170" height="180" fill="#5A4A2A" stroke="#3A2A1A" stroke-width="3"/>
+        <rect x="260" y="60" width="150" height="160" fill="#3A2A1A"/>
+        <!-- "WE ARE HIRING" poster -->
+        <rect x="275" y="80" width="120" height="120" fill="#FCEBA0" stroke="#5A4A2A" stroke-width="1"/>
+        <text x="335" y="100" text-anchor="middle" fill="#EF4444" style="font-family: 'Bebas Neue',sans-serif; font-size:13px; letter-spacing:0.15em;">WE'RE HIRING</text>
+        <line x1="290" y1="108" x2="380" y2="108" stroke="#3A2A1A" stroke-width="1"/>
+        <text x="335" y="125" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">Operations Mgr</text>
+        <text x="335" y="142" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Acme Mfg</text>
+        <text x="335" y="160" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Apply by:</text>
+        <text x="335" y="174" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">end of month</text>
+        <text x="335" y="190" text-anchor="middle" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">hr@acme.co.za</text>
+        <!-- Pin -->
+        <circle cx="335" cy="85" r="3" fill="#EF4444"/>
+        <circle class="hot-marker" cx="420" cy="50" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="420" y="54" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="420" y="56" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="335" y="35" text-anchor="middle">Noticeboard</text>
+      </g>
+
+      <!-- CV TRAY (HOTSPOT - screen) -->
+      <g class="hotspot" data-hotspot-id="screen">
+        <rect class="hit-zone" x="250" y="395" width="180" height="120" rx="2"/>
+        <!-- Tray -->
+        <rect x="260" y="420" width="160" height="80" fill="#5A6478" stroke="#3D4860" stroke-width="2" rx="2"/>
+        <rect x="265" y="425" width="150" height="70" fill="#3D4860"/>
+        <!-- Stack of CVs -->
+        <rect x="275" y="430" width="130" height="58" fill="#F0EAD8" stroke="#8B92A7"/>
+        <rect x="278" y="432" width="130" height="58" fill="#F0EAD8" stroke="#8B92A7" opacity="0.85"/>
+        <rect x="281" y="434" width="130" height="58" fill="#F0EAD8" stroke="#8B92A7" opacity="0.7"/>
+        <text x="295" y="448" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">SCREENING</text>
+        <text x="295" y="460" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">47 CVs total</text>
+        <text x="295" y="472" fill="#10B981" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">12 pass</text>
+        <text x="295" y="484" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">35 reject</text>
+        <circle class="hot-marker" cx="420" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="420" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="420" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="340" y="395" text-anchor="middle">CV tray</text>
+      </g>
+
+      <!-- WHITEBOARD with interview schedule (HOTSPOT - interv) -->
+      <g class="hotspot" data-hotspot-id="interv">
+        <rect class="hit-zone" x="450" y="60" width="200" height="160" rx="2"/>
+        <rect x="460" y="70" width="180" height="140" fill="#2A3244" stroke="#5A6478" stroke-width="2"/>
+        <rect x="465" y="75" width="170" height="130" fill="#E8EAED"/>
+        <text x="550" y="92" text-anchor="middle" fill="#3D4860" style="font-family: 'Bebas Neue',sans-serif; font-size:11px; letter-spacing:0.1em;">INTERVIEWS</text>
+        <line x1="475" y1="98" x2="625" y2="98" stroke="#3D4860" stroke-width="0.5"/>
+        <text x="475" y="115" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">Tue 10am - Khumalo</text>
+        <text x="475" y="133" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">Tue 2pm  - vd Merwe</text>
+        <text x="475" y="151" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">Wed 10am - Patel</text>
+        <text x="475" y="178" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">SHORTLIST = 3</text>
+        <!-- Marker tray -->
+        <rect x="510" y="208" width="40" height="4" fill="#3D4860"/>
+        <circle cx="520" cy="210" r="2" fill="#EF4444"/>
+        <circle cx="535" cy="210" r="2" fill="#22D3EE"/>
+        <circle class="hot-marker" cx="640" cy="60" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="640" y="64" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="640" y="66" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="550" y="55" text-anchor="middle">Whiteboard</text>
+      </g>
+
+      <!-- FILE CABINET (HOTSPOT - appoint) -->
+      <g class="hotspot" data-hotspot-id="appoint">
+        <rect class="hit-zone" x="700" y="240" width="120" height="280" rx="2"/>
+        <rect x="710" y="260" width="100" height="240" fill="#3D4860" stroke="#5A6478" stroke-width="2"/>
+        <rect x="715" y="265" width="90" height="55" fill="#2A3244" stroke="#5A6478"/>
+        <rect x="715" y="324" width="90" height="55" fill="#2A3244" stroke="#5A6478"/>
+        <rect x="715" y="383" width="90" height="55" fill="#2A3244" stroke="#5A6478"/>
+        <rect x="715" y="442" width="90" height="55" fill="#2A3244" stroke="#5A6478"/>
+        <!-- Handles -->
+        <rect x="745" y="290" width="20" height="3" fill="#8B92A7"/>
+        <rect x="745" y="349" width="20" height="3" fill="#8B92A7"/>
+        <rect x="745" y="408" width="20" height="3" fill="#8B92A7"/>
+        <rect x="745" y="467" width="20" height="3" fill="#8B92A7"/>
+        <!-- Top drawer slightly open with letter -->
+        <rect x="745" y="280" width="55" height="20" fill="#F0EAD8" stroke="#5A4A2A" transform="rotate(-2 770 290)"/>
+        <text x="772" y="290" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:6px;" transform="rotate(-2 770 290)">APPOINTMENT</text>
+        <circle class="hot-marker" cx="820" cy="245" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="820" y="249" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="820" y="251" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="760" y="237" text-anchor="middle">File cabinet</text>
+      </g>
+
+      <!-- COFFEE TABLE with binder (HOTSPOT - induct) -->
+      <g class="hotspot" data-hotspot-id="induct">
+        <rect class="hit-zone" x="850" y="395" width="140" height="160" rx="2"/>
+        <!-- Table -->
+        <rect x="860" y="470" width="120" height="40" fill="#3A2A1A" stroke="#1F1610"/>
+        <rect x="870" y="510" width="6" height="40" fill="#1F1610"/>
+        <rect x="965" y="510" width="6" height="40" fill="#1F1610"/>
+        <!-- Binder -->
+        <rect x="875" y="430" width="90" height="50" fill="#22D3EE" stroke="#0F4E5A" stroke-width="2"/>
+        <rect x="880" y="435" width="80" height="40" fill="#FFFFFF" stroke="#5A6478"/>
+        <text x="920" y="450" text-anchor="middle" fill="#0F4E5A" style="font-family: 'Bebas Neue',sans-serif; font-size:9px; letter-spacing:0.1em;">WELCOME</text>
+        <text x="920" y="463" text-anchor="middle" fill="#0F4E5A" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">Induction Pack</text>
+        <text x="920" y="473" text-anchor="middle" fill="#5A6478" style="font-family: 'JetBrains Mono',monospace; font-size:5px;">New Employee</text>
+        <circle class="hot-marker" cx="980" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="980" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="980" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="920" y="395" text-anchor="middle">Coffee table</text>
+      </g>
+
+      <!-- Floor lamp -->
+      <g opacity="0.7">
+        <line x1="60" y1="380" x2="60" y2="540" stroke="#5A6478" stroke-width="1.5"/>
+        <ellipse cx="60" cy="535" rx="14" ry="3" fill="#3D4860"/>
+        <polygon points="40,290 80,290 70,330 50,330" fill="#5A4A2A"/>
+        <ellipse cx="60" cy="320" rx="10" ry="3" fill="#FFD66E" opacity="0.7"/>
+      </g>
+
+      <radialGradient id="hVig" cx="0.5" cy="0.5" r="0.7">
+        <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+      </radialGradient>
+      <rect x="0" y="0" width="1000" height="600" fill="url(#hVig)" pointer-events="none"/>
+    </svg>
+  `;
+}
+
+function buildFinanceScene(room) {
+  return `
+    <svg class="scene-svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="fWallG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0F1320"/>
+          <stop offset="100%" stop-color="#060810"/>
+        </linearGradient>
+        <linearGradient id="fFloorG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0A0E18"/>
+          <stop offset="100%" stop-color="#04080F"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="1000" height="380" fill="url(#fWallG)"/>
+      <rect x="0" y="380" width="1000" height="220" fill="url(#fFloorG)"/>
+      <line x1="0" y1="380" x2="1000" y2="380" stroke="#2A3244" stroke-width="0.5"/>
+
+      <!-- Marble pattern accent on wall -->
+      <line x1="0" y1="120" x2="1000" y2="120" stroke="#1F2A3A" stroke-width="0.5" opacity="0.4"/>
+      <line x1="0" y1="240" x2="1000" y2="240" stroke="#1F2A3A" stroke-width="0.5" opacity="0.4"/>
+
+      <!-- VAULT (LOCKED HOTSPOT) - dominant feature on back wall -->
+      <g class="hotspot locked" data-hotspot-id="vault">
+        <rect class="hit-zone" x="380" y="50" width="240" height="320" rx="2"/>
+        <!-- Vault frame -->
+        <rect x="390" y="60" width="220" height="300" fill="#1F2A3A" stroke="#3D4860" stroke-width="4"/>
+        <!-- Vault door -->
+        <rect x="410" y="80" width="180" height="260" fill="#2A3244" stroke="#5A6478" stroke-width="2" rx="4"/>
+        <!-- Bolts -->
+        <circle cx="425" cy="95" r="5" fill="#5A6478"/>
+        <circle cx="575" cy="95" r="5" fill="#5A6478"/>
+        <circle cx="425" cy="325" r="5" fill="#5A6478"/>
+        <circle cx="575" cy="325" r="5" fill="#5A6478"/>
+        <!-- Big circular dial -->
+        <circle cx="500" cy="200" r="60" fill="#1F1610" stroke="#5A6478" stroke-width="3"/>
+        <circle cx="500" cy="200" r="48" fill="#3D4860"/>
+        <circle cx="500" cy="200" r="36" fill="#2A3244"/>
+        <circle cx="500" cy="200" r="5" fill="#F5A623"/>
+        <!-- Dial markings -->
+        <text x="500" y="155" text-anchor="middle" fill="#8B92A7" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">0</text>
+        <text x="545" y="205" text-anchor="middle" fill="#8B92A7" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">25</text>
+        <text x="500" y="248" text-anchor="middle" fill="#8B92A7" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">50</text>
+        <text x="455" y="205" text-anchor="middle" fill="#8B92A7" style="font-family: 'JetBrains Mono',monospace; font-size:9px;">75</text>
+        <line x1="500" y1="200" x2="525" y2="180" stroke="#F5A623" stroke-width="3"/>
+        <!-- Plaque -->
+        <rect x="450" y="285" width="100" height="30" fill="#1F1610" stroke="#5A6478"/>
+        <text x="500" y="298" text-anchor="middle" fill="#F5A623" style="font-family: 'Bebas Neue',sans-serif; font-size:10px; letter-spacing:0.2em;">TREASURY</text>
+        <text x="500" y="310" text-anchor="middle" fill="#8B92A7" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">CY 2025</text>
+        <!-- Lock LED -->
+        <circle cx="500" cy="345" r="4" fill="#EF4444">
+          <animate attributeName="opacity" values="1;0.4;1" dur="1.4s" repeatCount="indefinite"/>
+        </circle>
+        <circle class="hot-marker" cx="610" cy="60" r="13" fill="#EF4444"/>
+        <text class="hot-marker" x="610" y="64" text-anchor="middle" fill="#FFFFFF" style="font-family: 'Bebas Neue',sans-serif; font-size:15px; pointer-events:none;">!</text>
+        <text class="hot-checkmark" x="610" y="66" text-anchor="middle" style="font-size:20px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="500" y="48" text-anchor="middle">The vault (Hint: CY = current year)</text>
+      </g>
+
+      <!-- ASSET LEDGER (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="ledger">
+        <rect class="hit-zone" x="50" y="240" width="200" height="160" rx="2"/>
+        <!-- Open book -->
+        <rect x="60" y="260" width="180" height="130" fill="#3A2A1A" stroke="#1F1610" stroke-width="2" rx="2"/>
+        <rect x="68" y="268" width="164" height="114" fill="#F0EAD8"/>
+        <line x1="150" y1="268" x2="150" y2="382" stroke="#5A4A2A" stroke-width="0.5"/>
+        <text x="110" y="282" text-anchor="middle" fill="#3A2A1A" style="font-family: 'Bebas Neue',sans-serif; font-size:9px; letter-spacing:0.1em;">ASSETS</text>
+        <text x="78" y="298" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Cash    R12,000</text>
+        <text x="78" y="312" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Stock   R28,000</text>
+        <text x="78" y="326" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">A/R     R20,000</text>
+        <line x1="78" y1="332" x2="142" y2="332" stroke="#3A2A1A" stroke-width="0.5"/>
+        <text x="78" y="346" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:8px; font-weight:bold;">TOTAL R60,000</text>
+        <text x="158" y="282" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">notes:</text>
+        <text x="158" y="298" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">verified</text>
+        <text x="158" y="312" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">30/06</text>
+        <circle class="hot-marker" cx="240" cy="245" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="240" y="249" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="240" y="251" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="150" y="240" text-anchor="middle">Asset ledger</text>
+      </g>
+
+      <!-- LIABILITIES on calculator (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="liabilities">
+        <rect class="hit-zone" x="55" y="395" width="170" height="140" rx="2"/>
+        <!-- Calculator body -->
+        <rect x="80" y="430" width="120" height="100" fill="#2A3244" stroke="#5A6478" stroke-width="2" rx="4"/>
+        <!-- Display -->
+        <rect x="90" y="438" width="100" height="22" fill="#0F1320" stroke="#1F2A3A"/>
+        <text x="185" y="453" text-anchor="end" fill="#22D3EE" style="font-family: 'JetBrains Mono',monospace; font-size:11px;">30,000</text>
+        <!-- Buttons -->
+        <g fill="#3D4860">
+          <rect x="92" y="465" width="18" height="14"/>
+          <rect x="113" y="465" width="18" height="14"/>
+          <rect x="134" y="465" width="18" height="14"/>
+          <rect x="155" y="465" width="18" height="14"/>
+          <rect x="176" y="465" width="14" height="14"/>
+          <rect x="92" y="482" width="18" height="14"/>
+          <rect x="113" y="482" width="18" height="14"/>
+          <rect x="134" y="482" width="18" height="14"/>
+          <rect x="155" y="482" width="18" height="14"/>
+          <rect x="176" y="482" width="14" height="14"/>
+        </g>
+        <!-- Sticky note pinned beside -->
+        <rect x="200" y="438" width="80" height="60" fill="#FCEBA0" transform="rotate(4 240 468)"/>
+        <text x="240" y="455" text-anchor="middle" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;" transform="rotate(4 240 468)">Liabilities</text>
+        <text x="240" y="468" text-anchor="middle" fill="#EF4444" style="font-family: 'Bebas Neue',sans-serif; font-size:11px;" transform="rotate(4 240 468)">R30,000</text>
+        <text x="240" y="481" text-anchor="middle" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;" transform="rotate(4 240 468)">Ratio = A/L</text>
+        <circle class="hot-marker" cx="220" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="220" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="220" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="140" y="395" text-anchor="middle">Calculator</text>
+      </g>
+
+      <!-- PROFIT CHART on wall (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="profit">
+        <rect class="hit-zone" x="700" y="50" width="240" height="180" rx="2"/>
+        <rect x="710" y="60" width="220" height="160" fill="#FFFFFF" stroke="#3D4860" stroke-width="2"/>
+        <text x="820" y="80" text-anchor="middle" fill="#3D4860" style="font-family: 'Bebas Neue',sans-serif; font-size:12px; letter-spacing:0.1em;">GROSS PROFIT</text>
+        <!-- Chart axes -->
+        <line x1="730" y1="200" x2="910" y2="200" stroke="#3D4860" stroke-width="1"/>
+        <line x1="730" y1="100" x2="730" y2="200" stroke="#3D4860" stroke-width="1"/>
+        <!-- Bars -->
+        <rect x="760" y="160" width="40" height="40" fill="#3D4860"/>
+        <rect x="830" y="100" width="40" height="100" fill="#10B981"/>
+        <text x="780" y="215" text-anchor="middle" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">Last yr</text>
+        <text x="850" y="215" text-anchor="middle" fill="#10B981" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">This yr</text>
+        <text x="780" y="155" text-anchor="middle" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">100k</text>
+        <text x="850" y="95" text-anchor="middle" fill="#10B981" style="font-family: 'Bebas Neue',sans-serif; font-size:11px;">180K</text>
+        <text x="820" y="178" text-anchor="middle" fill="#10B981" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">+80% ↑</text>
+        <circle class="hot-marker" cx="930" cy="60" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="930" y="64" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="930" y="66" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="820" y="55" text-anchor="middle">Profit chart</text>
+      </g>
+
+      <!-- EXPENSE REPORT (HOTSPOT) -->
+      <g class="hotspot" data-hotspot-id="expenses">
+        <rect class="hit-zone" x="730" y="395" width="200" height="140" rx="2"/>
+        <!-- Folder -->
+        <rect x="745" y="420" width="170" height="100" fill="#3A2A1A" stroke="#1F1610" stroke-width="2"/>
+        <rect x="755" y="430" width="150" height="80" fill="#F0EAD8"/>
+        <rect x="760" y="430" width="60" height="14" fill="#EF4444"/>
+        <text x="790" y="441" text-anchor="middle" fill="#FFFFFF" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">EXPENSES</text>
+        <text x="765" y="458" fill="#3A2A1A" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">Last yr: R40,000</text>
+        <text x="765" y="473" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:8px;">This yr: R80,000</text>
+        <text x="765" y="488" fill="#EF4444" style="font-family: 'JetBrains Mono',monospace; font-size:7px;">DOUBLED ↑↑</text>
+        <text x="765" y="503" fill="#3D4860" style="font-family: 'JetBrains Mono',monospace; font-size:6px;">sales unchanged</text>
+        <circle class="hot-marker" cx="920" cy="400" r="11" fill="#F5A623"/>
+        <text class="hot-marker" x="920" y="404" text-anchor="middle" fill="#0B0E17" style="font-family: 'Bebas Neue',sans-serif; font-size:14px; pointer-events:none;">?</text>
+        <text class="hot-checkmark" x="920" y="406" text-anchor="middle" style="font-size:18px; font-weight:bold;">✓</text>
+        <text class="hot-label" x="830" y="395" text-anchor="middle">Expense report</text>
+      </g>
+
+      <radialGradient id="fVig" cx="0.5" cy="0.5" r="0.7">
+        <stop offset="60%" stop-color="#000" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+      </radialGradient>
+      <rect x="0" y="0" width="1000" height="600" fill="url(#fVig)" pointer-events="none"/>
+    </svg>
+  `;
+}
+
 function openHotspot(room, hotspotId) {
   const hot = room.hotspots.find(h => h.id === hotspotId);
   if (!hot) return;
@@ -1951,22 +2921,100 @@ function unlockFinalGate(room) {
   document.getElementById(room.id + '-gate-body').innerHTML = room.finalGate.unlockedBody;
   document.getElementById(room.id + '-gate-progress').remove();
 
-  // Inject the comprehension question
+  // Inject the puzzle (mechanic depends on puzzle.kind)
+  renderEscapePuzzle(room);
+}
+
+function renderEscapePuzzle(room) {
   const compHost = document.getElementById(room.id + '-comprehension');
   compHost.style.display = 'block';
-  compHost.innerHTML = `
-    <p style="margin-bottom: 14px; color: var(--text); font-weight: 500;">${room.comprehension.prompt}</p>
-    <div class="card-grid">
-      ${room.comprehension.items.map((it, i) =>
+  const p = room.puzzle;
+  let html = `<p style="margin-bottom: 14px; color: var(--text); font-weight: 500;">${escapeHtml(p.prompt)}</p>`;
+
+  if (p.kind === 'selectCards') {
+    html += `<div class="card-grid">${
+      p.items.map((it, i) =>
         `<button class="select-card" data-comp-idx="${i}" data-correct="${it.correct}">
           <span class="checkbox"></span><span>${escapeHtml(it.text)}</span>
         </button>`
-      ).join('')}
-    </div>
-  `;
-  compHost.querySelectorAll('.select-card').forEach(c => {
-    c.addEventListener('click', () => c.classList.toggle('selected'));
-  });
+      ).join('')
+    }</div>`;
+  } else if (p.kind === 'dropdowns' || p.kind === 'dropdownsWithFinal') {
+    html += p.questions.map((q, i) => `
+      <div class="q-row">
+        <div class="q-text">${q.text}</div>
+        <select data-q="${i}" data-answer="${escapeAttr(q.answer)}">
+          <option value="">${escapeHtml(p.placeholder)}</option>
+          ${q.options.map(o => `<option value="${escapeAttr(o)}">${escapeHtml(o)}</option>`).join('')}
+        </select>
+      </div>
+    `).join('');
+    if (p.kind === 'dropdownsWithFinal') {
+      html += `
+        <div class="q-row" style="border-top: 1px solid var(--amber); margin-top: 16px; padding-top: 20px;">
+          <div class="q-text">${p.finalQuestion}</div>
+          <input type="text" data-final placeholder="${escapeAttr(p.finalPlaceholder)}" maxlength="20" style="max-width:220px;">
+        </div>`;
+    }
+  } else if (p.kind === 'ordering') {
+    html += `<ol class="order-list" id="${room.id}-list"></ol>`;
+  } else if (p.kind === 'finance') {
+    html += `
+      <div class="q-row">
+        <div class="q-text">${p.q1Text}</div>
+        <input type="number" data-fin="1" placeholder="X" min="0" max="9" style="max-width:120px;">
+      </div>
+      <div class="q-row">
+        <div class="q-text">${p.q2Text}</div>
+        <select data-fin="2">
+          <option value="">— select interpretation —</option>
+          ${p.q2Options.map(o => `<option value="${escapeAttr(o.value)}">${escapeHtml(o.label)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="q-row">
+        <div class="q-text">${p.q3Text}</div>
+        <select data-fin="3">
+          <option value="">— select interpretation —</option>
+          ${p.q3Options.map(o => `<option value="${escapeAttr(o.value)}">${escapeHtml(o.label)}</option>`).join('')}
+        </select>
+      </div>
+    `;
+  }
+  compHost.innerHTML = html;
+
+  // Wire post-render
+  if (p.kind === 'selectCards') {
+    compHost.querySelectorAll('.select-card').forEach(c => {
+      c.addEventListener('click', () => c.classList.toggle('selected'));
+    });
+  } else if (p.kind === 'ordering') {
+    room._currentOrder = p.scrambledIndices.slice();
+    refreshEscapeOrderingList(room);
+  }
+}
+
+function refreshEscapeOrderingList(room) {
+  const list = document.getElementById(room.id + '-list');
+  if (!list) return;
+  const p = room.puzzle;
+  list.innerHTML = room._currentOrder.map((stepIdx, pos) => `
+    <li class="order-item">
+      <span class="num">${String(pos + 1).padStart(2, '0')}</span>
+      <span class="label">${escapeHtml(p.steps[stepIdx])}</span>
+      <span class="controls">
+        <button class="order-btn" onclick="moveEscapeOrder('${room.id}', ${pos}, -1)" ${pos === 0 ? 'disabled' : ''}>▲</button>
+        <button class="order-btn" onclick="moveEscapeOrder('${room.id}', ${pos}, 1)" ${pos === room._currentOrder.length - 1 ? 'disabled' : ''}>▼</button>
+      </span>
+    </li>
+  `).join('');
+}
+
+function moveEscapeOrder(roomId, pos, dir) {
+  const room = CONTENT.rooms.find(r => r.id === roomId);
+  const newPos = pos + dir;
+  if (newPos < 0 || newPos >= room._currentOrder.length) return;
+  [room._currentOrder[pos], room._currentOrder[newPos]] = [room._currentOrder[newPos], room._currentOrder[pos]];
+  refreshEscapeOrderingList(room);
 }
 
 function checkEscapeRoom(room) {
@@ -1974,25 +3022,66 @@ function checkEscapeRoom(room) {
   if (!st || st.foundClues.size < room.hotspots.length) {
     return showFeedback(room.id + 'fb', false, room.fbCluesIncomplete);
   }
-  // Validate the comprehension question
-  const cards = document.querySelectorAll(`#${room.id}-comprehension .select-card`);
-  if (cards.length === 0) {
-    return showFeedback(room.id + 'fb', false, room.fbCluesIncomplete);
+  const p = room.puzzle;
+  const root = `#${room.id}-comprehension`;
+
+  if (p.kind === 'selectCards') {
+    const cards = document.querySelectorAll(`${root} .select-card`);
+    if (cards.length === 0) return showFeedback(room.id + 'fb', false, room.fbCluesIncomplete);
+    const selected = Array.from(cards).filter(c => c.classList.contains('selected'));
+    let allCorrect = true;
+    cards.forEach(c => {
+      if ((c.dataset.correct === 'true') !== c.classList.contains('selected')) allCorrect = false;
+    });
+    if (selected.length !== p.requiredSelections) return showFeedback(room.id + 'fb', false, room.fbWrongCount);
+    if (allCorrect) { showFeedback(room.id + 'fb', true, room.fbCorrect); unlockRoom(room); }
+    else showFeedback(room.id + 'fb', false, room.fbWrongPicks);
+    return;
   }
-  const selected = Array.from(cards).filter(c => c.classList.contains('selected'));
-  let allCorrect = true;
-  cards.forEach(c => {
-    const isCorrect = c.dataset.correct === 'true';
-    const isSelected = c.classList.contains('selected');
-    if (isCorrect !== isSelected) allCorrect = false;
-  });
-  if (selected.length !== room.comprehension.requiredSelections) {
-    showFeedback(room.id + 'fb', false, room.fbWrongCount);
-  } else if (allCorrect) {
+
+  if (p.kind === 'dropdowns') {
+    const selects = document.querySelectorAll(`${root} select[data-q]`);
+    let allCorrect = true, anyBlank = false;
+    selects.forEach(s => { if (!s.value) anyBlank = true; if (s.value !== s.dataset.answer) allCorrect = false; });
+    if (anyBlank) return showFeedback(room.id + 'fb', false, room.fbBlank);
+    if (allCorrect) { showFeedback(room.id + 'fb', true, room.fbCorrect); unlockRoom(room); }
+    else showFeedback(room.id + 'fb', false, room.fbWrong);
+    return;
+  }
+
+  if (p.kind === 'dropdownsWithFinal') {
+    const selects = document.querySelectorAll(`${root} select[data-q]`);
+    let classifyCorrect = true, anyBlank = false;
+    selects.forEach(s => { if (!s.value) anyBlank = true; if (s.value !== s.dataset.answer) classifyCorrect = false; });
+    const finalEl = document.querySelector(`${root} input[data-final]`);
+    const finalVal = (finalEl && finalEl.value || '').trim().toLowerCase();
+    if (anyBlank) return showFeedback(room.id + 'fb', false, room.fbBlank);
+    if (!classifyCorrect) return showFeedback(room.id + 'fb', false, room.fbWrongClassify);
+    if (finalVal !== p.finalAnswer.toLowerCase()) return showFeedback(room.id + 'fb', false, room.fbWrongFinal);
     showFeedback(room.id + 'fb', true, room.fbCorrect);
     unlockRoom(room);
-  } else {
-    showFeedback(room.id + 'fb', false, room.fbWrongPicks);
+    return;
+  }
+
+  if (p.kind === 'ordering') {
+    const correct = room._currentOrder && room._currentOrder.every((stepIdx, pos) => stepIdx === pos);
+    if (correct) { showFeedback(room.id + 'fb', true, room.fbCorrect); unlockRoom(room); }
+    else showFeedback(room.id + 'fb', false, room.fbWrong);
+    return;
+  }
+
+  if (p.kind === 'finance') {
+    const v1 = (document.querySelector(`${root} input[data-fin="1"]`) || {}).value || '';
+    const v2 = (document.querySelector(`${root} select[data-fin="2"]`) || {}).value || '';
+    const v3 = (document.querySelector(`${root} select[data-fin="3"]`) || {}).value || '';
+    if (!v1.trim() || !v2 || !v3) return showFeedback(room.id + 'fb', false, room.fbBlank);
+    if (v1.trim() === p.q1Answer && v2 === p.q2Answer && v3 === p.q3Answer) {
+      showFeedback(room.id + 'fb', true, room.fbCorrect);
+      unlockRoom(room);
+    } else {
+      showFeedback(room.id + 'fb', false, room.fbWrong);
+    }
+    return;
   }
 }
 
