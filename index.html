@@ -482,6 +482,85 @@
     50% { opacity: 1; }
   }
 
+  /* Hidden hotspots — no marker visible until hovered */
+  .hotspot.hidden .hot-marker { display: none !important; }
+  .hotspot.hidden:hover .hit-zone {
+    fill: rgba(245, 166, 35, 0.04);
+    stroke: rgba(245, 166, 35, 0.5);
+    stroke-dasharray: 4 4;
+    animation: hiddenReveal 0.6s ease;
+  }
+  @keyframes hiddenReveal {
+    0% { stroke: transparent; }
+    100% { stroke: rgba(245, 166, 35, 0.5); }
+  }
+  .hotspot.hidden.found .hit-zone {
+    fill: rgba(16, 185, 129, 0.06);
+    stroke: rgba(16, 185, 129, 0.4);
+  }
+
+  /* Free-text answer styles */
+  .ft-block {
+    margin: 18px 0;
+    padding: 16px;
+    background: var(--ink-2);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 4px 4px 0;
+    transition: border-color 0.3s ease;
+  }
+  .ft-block.gating { border-left-color: var(--amber); }
+  .ft-block.extended { border-left-color: var(--cyan); }
+  .ft-block .ft-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+  .ft-block.extended .ft-label { color: var(--cyan); }
+  .ft-block .ft-prompt {
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .ft-block input[type="text"],
+  .ft-block textarea {
+    width: 100%;
+    background: var(--ink);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 10px 12px;
+    border-radius: 3px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .ft-block input[type="text"]:focus,
+  .ft-block textarea:focus {
+    outline: none;
+    border-color: var(--amber);
+    box-shadow: 0 0 0 3px var(--amber-glow);
+  }
+  .ft-block textarea {
+    min-height: 70px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .ft-block .ft-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .ft-block .ft-counter {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
   /* Clue inventory bar */
   .clue-inventory {
     display: grid;
@@ -881,6 +960,7 @@ const DEFAULT_CONTENT = {
         {
           id: "bin",
           label: "Wastepaper bin",
+          hidden: true,
           clueTitle: "Crumpled audit memo",
           clueBody: "AUDIT MEMO — Smith &amp; Co. Chartered Auditors<br><br>To: The Board<br><br>Annual reports must be <strong>truthful</strong> and verified by independent auditors before publication. Any attempt to suppress or distort findings constitutes a breach of fiduciary duty.",
           takeaway: "King Code principle: truthful, audited reporting"
@@ -912,7 +992,7 @@ const DEFAULT_CONTENT = {
           locked: true,
           code: "0702",
           codePromptTitle: "Locked filing cabinet",
-          codePrompt: "A heavy steel filing cabinet, secured with a 4-digit combination lock. The lock is dusty but recently used. Find the code somewhere else in this room.",
+          codePrompt: "A heavy steel filing cabinet, secured with a 4-digit combination lock. The lock is dusty but recently used. <em>Riddle: \"Where the board meets, the day they cannot forget — find it marked, and read its date as four digits (DDMM).\"</em>",
           codeLabel: "ENTER 4-DIGIT CODE",
           codeWrongFb: "✗ Incorrect code. Look for a date or number elsewhere in the room.",
           clueTitle: "Board appointment letter",
@@ -937,7 +1017,19 @@ const DEFAULT_CONTENT = {
           { text: "Managers hide environmental damage caused by operations from the public.", correct: false },
           { text: "The board acts with accountability and responsibility toward all shareholders.", correct: true }
         ],
-        requiredSelections: 3
+        requiredSelections: 3,
+        shortAnswer: {
+          prompt: "Name the <strong>code</strong> that sets out South Africa's corporate-governance principles. (One or two words.)",
+          keywords: ["king code", "king report", "king iv", "king 4"],
+          hint: "It's named after a person, and is referred to throughout the boardroom."
+        },
+        extendedResponses: [
+          {
+            prompt: "<strong>In your own words</strong>, explain what <em>accountability to shareholders</em> means in practice. What must a CEO actually do?",
+            hint: "Two to three sentences. Think about what shareholders need to see, hear, and trust.",
+            minWords: 25
+          }
+        ]
       },
       unlockCode: "472", unlockDisplay: "4 7 2",
       unlockLabel: "Boardroom door released • Access code recovered",
@@ -972,6 +1064,7 @@ const DEFAULT_CONTENT = {
         {
           id: "menu",
           label: "Menu sample",
+          hidden: true,
           clueTitle: "Printed menu prototype",
           clueBody: "Pulled from the printer — a flimsy, stained photocopy on cheap white paper. The fonts are smudged. A coffee ring runs across the wagyu beef section.<br><br><em>Sticky note: \"Print 5,000 of these for the launch.\"</em>",
           takeaway: "The product itself looks cheap — physical quality undermines the brand"
@@ -989,7 +1082,7 @@ const DEFAULT_CONTENT = {
           locked: true,
           code: "1985",
           codePromptTitle: "Designer's portfolio safe",
-          codePrompt: "A locked metal portfolio case under the desk. The agency creative director's initials are engraved: J.R. The case has a 4-digit lock. Find the year somewhere in this room.",
+          codePrompt: "A locked metal portfolio case under the desk, engraved: J.R. The case has a 4-digit lock. <em>Riddle: \"The year this firm was born is etched on the safe itself — but said only in passing. Read carefully.\"</em>",
           codeLabel: "ENTER 4-DIGIT YEAR",
           codeWrongFb: "✗ Wrong year. Look at dates printed on objects in the room.",
           clueTitle: "Final campaign manifesto",
@@ -1011,6 +1104,18 @@ const DEFAULT_CONTENT = {
           { text: "<em>Problem A.</em> The restaurant targets wealthy adults but advertised on a children's cartoon channel.", options: ["Product","Price","Place","Promotion"], answer: "Promotion" },
           { text: "<em>Problem B.</em> The restaurant is positioned as high-end but ran a \"two-rand combo meal\" special.", options: ["Product","Price","Place","Promotion"], answer: "Price" },
           { text: "<em>Problem C.</em> The fine-dining menu is printed on flimsy, stained photocopy paper.", options: ["Product","Price","Place","Promotion"], answer: "Product" }
+        ],
+        shortAnswer: {
+          prompt: "What single phrase describes the four elements of the marketing mix together? (One word, hyphens allowed — or the famous \"4Ps\" name.)",
+          keywords: ["4ps", "four ps", "4 ps", "marketing mix"],
+          hint: "It's the umbrella term for Product, Price, Place, and Promotion."
+        },
+        extendedResponses: [
+          {
+            prompt: "<strong>Briefly explain</strong> why getting one element of the marketing mix wrong damages the whole campaign — even if the other three are perfect. Use the steakhouse example to illustrate.",
+            hint: "Two or three sentences. Show that you understand why the 4Ps work as a system.",
+            minWords: 30
+          }
         ]
       },
       unlockCode: "MIX", unlockDisplay: "M I X",
@@ -1039,6 +1144,7 @@ const DEFAULT_CONTENT = {
         {
           id: "supplier",
           label: "Supplier email",
+          hidden: true,
           clueTitle: "Email from key supplier",
           clueBody: "From: Acme Suppliers Ltd<br>To: Operations Director<br><br>\"We regret another delay in delivery. Stock will arrive 14 days late.\"<br><br>Also today: a competitor opened two blocks away. Customer survey shows tastes are shifting toward healthier options.<br><br><em>These touch us but aren't inside us.</em>",
           takeaway: "MARKET environment — competitors, suppliers, customers — we influence but don't control"
@@ -1056,7 +1162,7 @@ const DEFAULT_CONTENT = {
           locked: true,
           code: "0312",
           codePromptTitle: "Encrypted analyst terminal",
-          codePrompt: "An analyst's terminal is locked. A sticky note on the screen reads: \"PIN = the date of the latest threat report (DDMM).\" Look on the wall for a recent threat date.",
+          codePrompt: "An analyst's terminal is locked. <em>Riddle: \"On the wall, a warning is filed — its date, in four digits, day-then-month, opens the screen.\"</em>",
           codeLabel: "ENTER PIN (DDMM)",
           codeWrongFb: "✗ Wrong code. The latest threat date is on a poster on the wall.",
           clueTitle: "Senior analyst's note",
@@ -1072,7 +1178,7 @@ const DEFAULT_CONTENT = {
       },
       puzzle: {
         kind: "dropdownsWithFinal",
-        prompt: "Sort each threat into Micro, Market, or Macro. Then answer the final question.",
+        prompt: "Sort each threat into Micro, Market, or Macro. Then answer the questions below.",
         placeholder: "— environment —",
         questions: [
           { text: "<em>1.</em> Unreliable employees affecting daily productivity.", options: ["Micro","Market","Macro"], answer: "Micro" },
@@ -1087,7 +1193,14 @@ const DEFAULT_CONTENT = {
         ],
         finalQuestion: "<em>Final question.</em> Which environment has the business the <strong>least</strong> control over?",
         finalPlaceholder: "ENVIRONMENT",
-        finalAnswer: "macro"
+        finalAnswer: "macro",
+        extendedResponses: [
+          {
+            prompt: "<strong>Explain in your own words</strong> why the macro environment is the hardest to manage. Give one example of a macro threat and describe what a business CAN do to <em>respond</em> to it (since it cannot prevent it).",
+            hint: "Two to four sentences. Show that you understand the difference between control and response.",
+            minWords: 35
+          }
+        ]
       },
       unlockCode: "MACRO", unlockDisplay: "M A C R O",
       unlockLabel: "Control systems online • Keyword recovered",
@@ -1123,6 +1236,7 @@ const DEFAULT_CONTENT = {
         {
           id: "case3",
           label: "File on noticeboard",
+          hidden: true,
           clueTitle: "Complaint #3 — Workplace conduct",
           clueBody: "FILING: J. Naidoo vs. Acme Manufacturing<br><br>\"My manager is consistently rude, dismissive and demeaning to junior staff. He undermines morale daily. <strong>However, no specific law has been broken.</strong>\"<br><br><em>Reference: Internal HR policy review.</em>",
           takeaway: "Rude conduct without law-breaking = UNETHICAL only"
@@ -1133,7 +1247,7 @@ const DEFAULT_CONTENT = {
           locked: true,
           code: "1986",
           codePromptTitle: "Sealed evidence box",
-          codePrompt: "A heavy evidence box on the registrar's desk, sealed with a 4-digit combination. The box is labelled with the year the Consumer Protection Act was first proposed in South Africa. (Hint: 1986.)",
+          codePrompt: "A heavy evidence box on the registrar's desk, sealed with a 4-digit combination. <em>Riddle: \"The year that began the rules consumers now invoke — find it stamped where the law itself is named.\"</em>",
           codeLabel: "ENTER 4-DIGIT YEAR",
           codeWrongFb: "✗ Wrong year. The CPA was proposed in 1986.",
           clueTitle: "Complaint #4 — Consumer deception",
@@ -1156,6 +1270,18 @@ const DEFAULT_CONTENT = {
           { text: "<em>Case 2.</em> A worker is forced to work overtime without being paid the required overtime rate.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Both unethical and illegal" },
           { text: "<em>Case 3.</em> A manager is consistently rude to junior staff but does not break a written law.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Unethical only" },
           { text: "<em>Case 4.</em> Expiry dates are deliberately hidden from consumers on food packaging.", options: ["Illegal only","Unethical only","Both unethical and illegal"], answer: "Both unethical and illegal" }
+        ],
+        shortAnswer: {
+          prompt: "Name the South African <strong>Act</strong> that protects buyers from false advertising and unsafe food (the one referenced in cases 1 and 4). Give the abbreviation OR full name.",
+          keywords: ["cpa", "consumer protection act", "consumer protection"],
+          hint: "Three words, often abbreviated to three letters. Look for it in case files."
+        },
+        extendedResponses: [
+          {
+            prompt: "Case 3 (a manager who is rude to staff) is <strong>unethical but not illegal</strong>. <strong>Explain in your own words</strong> the difference between something being illegal and something being unethical. Why might both still be harmful to a business?",
+            hint: "Three to four sentences. Define each term, then explain the business impact.",
+            minWords: 40
+          }
         ]
       },
       unlockCode: "LAW", unlockDisplay: "L A W",
@@ -1205,6 +1331,7 @@ const DEFAULT_CONTENT = {
         {
           id: "appoint",
           label: "Letter in cabinet",
+          hidden: true,
           clueTitle: "Document found: Appointment Letter",
           clueBody: "Dear Mr Khumalo,<br><br>Following your successful interview, we are pleased to offer you the position of <strong>Operations Manager</strong> at Acme Manufacturing.<br><br>Your start date is the 1st of next month.<br><br><em>The interview produced a winner. Now they're appointed.</em>",
           takeaway: "STEP 5: Appoint the suitable candidate"
@@ -1212,6 +1339,7 @@ const DEFAULT_CONTENT = {
         {
           id: "induct",
           label: "Binder on coffee table",
+          hidden: true,
           clueTitle: "Document found: Induction Pack",
           clueBody: "WELCOME TO ACME — Induction Pack<br><br>Day 1: company tour, IT setup, safety briefing.<br>Week 1: meet your team, learn our systems.<br>Month 1: first review.<br><br><em>The new appointee needs to be brought into the company. This is the LAST step.</em>",
           takeaway: "STEP 6: Induct the new employee"
@@ -1234,7 +1362,19 @@ const DEFAULT_CONTENT = {
           "Appoint the suitable candidate",
           "Induct the new employee"
         ],
-        scrambledIndices: [1, 5, 0, 3, 2, 4]
+        scrambledIndices: [1, 5, 0, 3, 2, 4],
+        shortAnswer: {
+          prompt: "What is the name of the very <strong>last</strong> step — where a new employee is welcomed, oriented, and learns the company's systems?",
+          keywords: ["induction", "induct", "onboarding", "orientation"],
+          hint: "Sometimes called \"onboarding\" too. The induction binder showed it."
+        },
+        extendedResponses: [
+          {
+            prompt: "<strong>Explain in your own words</strong> why <em>induction</em> must come AFTER appointment, and why skipping it is risky for both the employee and the business.",
+            hint: "Two to three sentences. Think about what a new employee doesn't yet know on day one.",
+            minWords: 30
+          }
+        ]
       },
       unlockCode: "HIREME", unlockDisplay: "H I R E M E",
       unlockLabel: "HR systems reopened • Keyword recovered",
@@ -1275,6 +1415,7 @@ const DEFAULT_CONTENT = {
         {
           id: "expenses",
           label: "Expense report",
+          hidden: true,
           clueTitle: "Operating expense report",
           clueBody: "OPERATING EXPENSES — alarming trend<br><br>· Last year: R40,000<br>· This year: <strong>R80,000</strong> (DOUBLED)<br><br>Sales volume: <em>unchanged.</em><br><br><em>CFO note: \"This will eat into net profit dramatically. Watch closely.\"</em>",
           takeaway: "Expenses doubled while sales stayed flat → net profit will FALL"
@@ -1285,7 +1426,7 @@ const DEFAULT_CONTENT = {
           locked: true,
           code: "2025",
           codePromptTitle: "The vault — final lock",
-          codePrompt: "The main steel vault, secured with a 4-digit annual code. A faded sticker on the corner reads: \"Code = current financial year.\" (The current year is 2025.)",
+          codePrompt: "The main steel vault, secured with a 4-digit annual code. <em>Riddle: \"The treasurer locks the vault each year with the year itself. We close the books on the year now ending — 2025.\"</em>",
           codeLabel: "ENTER 4-DIGIT YEAR",
           codeWrongFb: "✗ Wrong year. Try the current financial year.",
           clueTitle: "Inside the vault — interpretation key",
@@ -1317,7 +1458,19 @@ const DEFAULT_CONTENT = {
           { value: "4", label: "Lower net profit (4)" },
           { value: "6", label: "No effect on net profit (6)" }
         ],
-        q3Answer: "4"
+        q3Answer: "4",
+        shortAnswer: {
+          prompt: "What is the financial <strong>ratio</strong> called when you divide current assets by current liabilities? (Two words.)",
+          keywords: ["current ratio", "currentratio"],
+          hint: "It's literally what you just calculated. The name is on the sticky note next to the calculator."
+        },
+        extendedResponses: [
+          {
+            prompt: "A current ratio of 2:1 means the business has R2 of current assets for every R1 of current liabilities. <strong>In your own words</strong>, explain what this tells the business about its short-term financial health, and what would worry you if the ratio dropped to 0.5:1.",
+            hint: "Three to four sentences. Show that you understand both directions — strong AND weak ratios.",
+            minWords: 40
+          }
+        ]
       },
       unlockCode: "284", unlockDisplay: "2 8 4",
       unlockLabel: "Treasury access granted • Code recovered",
@@ -1755,15 +1908,28 @@ async function postToSheets(name, completionTime) {
   const statusEl = document.getElementById('sheetsStatus');
   if (!url) { statusEl.textContent = ''; return; }
 
+  // Flatten all captured free-text responses into the payload
+  const responses = state.responses || {};
+  const payload = { name, completionTime };
+  CONTENT.rooms.forEach(r => {
+    const resp = responses[r.id];
+    if (resp) {
+      payload[r.name + ' — short answer'] = resp.shortAnswer || '';
+      (resp.extended || []).forEach((txt, i) => {
+        payload[r.name + ' — written response ' + (i + 1)] = txt;
+      });
+    }
+  });
+
   try {
     // no-cors means we can't read the response, but the write still lands
     await fetch(url, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ name, completionTime })
+      body: JSON.stringify(payload)
     });
-    statusEl.textContent = '✓ Result recorded';
+    statusEl.textContent = '✓ Result and answers recorded';
     statusEl.style.color = 'var(--emerald)';
   } catch (e) {
     statusEl.textContent = '⚠ Could not record result (offline?)';
@@ -1825,7 +1991,10 @@ function renderEscapeRoom(room) {
 
   // Wire up hotspots
   body.querySelectorAll('.hotspot').forEach(hs => {
-    hs.addEventListener('click', () => openHotspot(room, hs.dataset.hotspotId));
+    const hid = hs.dataset.hotspotId;
+    const hsData = (room.hotspots || []).find(h => h.id === hid);
+    if (hsData && hsData.hidden) hs.classList.add('hidden');
+    hs.addEventListener('click', () => openHotspot(room, hid));
   });
 }
 
@@ -2931,6 +3100,7 @@ function renderEscapePuzzle(room) {
   const p = room.puzzle;
   let html = `<p style="margin-bottom: 14px; color: var(--text); font-weight: 500;">${escapeHtml(p.prompt)}</p>`;
 
+  // === Existing puzzle mechanics ===
   if (p.kind === 'selectCards') {
     html += `<div class="card-grid">${
       p.items.map((it, i) =>
@@ -2980,6 +3150,32 @@ function renderEscapePuzzle(room) {
       </div>
     `;
   }
+
+  // === NEW: Short-answer (gating, keyword-checked) ===
+  if (p.shortAnswer) {
+    html += `
+      <div class="ft-block gating">
+        <div class="ft-label">▸ Fill in — required to unlock</div>
+        <div class="ft-prompt">${p.shortAnswer.prompt}</div>
+        <input type="text" data-short maxlength="80" placeholder="Your answer...">
+        ${p.shortAnswer.hint ? `<div class="ft-hint">💡 ${escapeHtml(p.shortAnswer.hint)}</div>` : ''}
+      </div>`;
+  }
+
+  // === NEW: Extended responses (NOT gating, captured to Sheets) ===
+  if (p.extendedResponses && p.extendedResponses.length) {
+    p.extendedResponses.forEach((er, i) => {
+      html += `
+        <div class="ft-block extended">
+          <div class="ft-label">▸ Written response ${p.extendedResponses.length > 1 ? (i + 1) : ''}— in your own words</div>
+          <div class="ft-prompt">${er.prompt}</div>
+          <textarea data-ext="${i}" placeholder="Write your answer in full sentences..." oninput="updateWordCount(this, ${er.minWords || 0})"></textarea>
+          <div class="ft-counter" data-counter-for="${i}">0 words${er.minWords ? ` · minimum ${er.minWords}` : ''}</div>
+          ${er.hint ? `<div class="ft-hint">💡 ${escapeHtml(er.hint)}</div>` : ''}
+        </div>`;
+    });
+  }
+
   compHost.innerHTML = html;
 
   // Wire post-render
@@ -2990,6 +3186,19 @@ function renderEscapePuzzle(room) {
   } else if (p.kind === 'ordering') {
     room._currentOrder = p.scrambledIndices.slice();
     refreshEscapeOrderingList(room);
+  }
+}
+
+function updateWordCount(textarea, minWords) {
+  const idx = textarea.getAttribute('data-ext');
+  const counter = textarea.parentElement.querySelector(`[data-counter-for="${idx}"]`);
+  if (!counter) return;
+  const words = (textarea.value.trim().match(/\S+/g) || []).length;
+  let txt = `${words} word${words === 1 ? '' : 's'}`;
+  if (minWords > 0) txt += ` · minimum ${minWords}`;
+  counter.textContent = txt;
+  if (minWords > 0) {
+    counter.style.color = words >= minWords ? 'var(--emerald)' : 'var(--text-dim)';
   }
 }
 
@@ -3025,64 +3234,95 @@ function checkEscapeRoom(room) {
   const p = room.puzzle;
   const root = `#${room.id}-comprehension`;
 
+  // ===== Validate the existing-mechanic puzzle =====
+  let mechanicPassed = false;
+  let mechanicFeedback = null;
+
   if (p.kind === 'selectCards') {
     const cards = document.querySelectorAll(`${root} .select-card`);
-    if (cards.length === 0) return showFeedback(room.id + 'fb', false, room.fbCluesIncomplete);
-    const selected = Array.from(cards).filter(c => c.classList.contains('selected'));
-    let allCorrect = true;
-    cards.forEach(c => {
-      if ((c.dataset.correct === 'true') !== c.classList.contains('selected')) allCorrect = false;
-    });
-    if (selected.length !== p.requiredSelections) return showFeedback(room.id + 'fb', false, room.fbWrongCount);
-    if (allCorrect) { showFeedback(room.id + 'fb', true, room.fbCorrect); unlockRoom(room); }
-    else showFeedback(room.id + 'fb', false, room.fbWrongPicks);
-    return;
-  }
-
-  if (p.kind === 'dropdowns') {
+    if (cards.length === 0) { mechanicFeedback = room.fbCluesIncomplete; }
+    else {
+      const selected = Array.from(cards).filter(c => c.classList.contains('selected'));
+      let allCorrect = true;
+      cards.forEach(c => {
+        if ((c.dataset.correct === 'true') !== c.classList.contains('selected')) allCorrect = false;
+      });
+      if (selected.length !== p.requiredSelections) mechanicFeedback = room.fbWrongCount;
+      else if (allCorrect) mechanicPassed = true;
+      else mechanicFeedback = room.fbWrongPicks;
+    }
+  } else if (p.kind === 'dropdowns') {
     const selects = document.querySelectorAll(`${root} select[data-q]`);
     let allCorrect = true, anyBlank = false;
     selects.forEach(s => { if (!s.value) anyBlank = true; if (s.value !== s.dataset.answer) allCorrect = false; });
-    if (anyBlank) return showFeedback(room.id + 'fb', false, room.fbBlank);
-    if (allCorrect) { showFeedback(room.id + 'fb', true, room.fbCorrect); unlockRoom(room); }
-    else showFeedback(room.id + 'fb', false, room.fbWrong);
-    return;
-  }
-
-  if (p.kind === 'dropdownsWithFinal') {
+    if (anyBlank) mechanicFeedback = room.fbBlank;
+    else if (allCorrect) mechanicPassed = true;
+    else mechanicFeedback = room.fbWrong;
+  } else if (p.kind === 'dropdownsWithFinal') {
     const selects = document.querySelectorAll(`${root} select[data-q]`);
     let classifyCorrect = true, anyBlank = false;
     selects.forEach(s => { if (!s.value) anyBlank = true; if (s.value !== s.dataset.answer) classifyCorrect = false; });
     const finalEl = document.querySelector(`${root} input[data-final]`);
     const finalVal = (finalEl && finalEl.value || '').trim().toLowerCase();
-    if (anyBlank) return showFeedback(room.id + 'fb', false, room.fbBlank);
-    if (!classifyCorrect) return showFeedback(room.id + 'fb', false, room.fbWrongClassify);
-    if (finalVal !== p.finalAnswer.toLowerCase()) return showFeedback(room.id + 'fb', false, room.fbWrongFinal);
-    showFeedback(room.id + 'fb', true, room.fbCorrect);
-    unlockRoom(room);
-    return;
-  }
-
-  if (p.kind === 'ordering') {
+    if (anyBlank) mechanicFeedback = room.fbBlank;
+    else if (!classifyCorrect) mechanicFeedback = room.fbWrongClassify;
+    else if (finalVal !== p.finalAnswer.toLowerCase()) mechanicFeedback = room.fbWrongFinal;
+    else mechanicPassed = true;
+  } else if (p.kind === 'ordering') {
     const correct = room._currentOrder && room._currentOrder.every((stepIdx, pos) => stepIdx === pos);
-    if (correct) { showFeedback(room.id + 'fb', true, room.fbCorrect); unlockRoom(room); }
-    else showFeedback(room.id + 'fb', false, room.fbWrong);
-    return;
-  }
-
-  if (p.kind === 'finance') {
+    if (correct) mechanicPassed = true;
+    else mechanicFeedback = room.fbWrong;
+  } else if (p.kind === 'finance') {
     const v1 = (document.querySelector(`${root} input[data-fin="1"]`) || {}).value || '';
     const v2 = (document.querySelector(`${root} select[data-fin="2"]`) || {}).value || '';
     const v3 = (document.querySelector(`${root} select[data-fin="3"]`) || {}).value || '';
-    if (!v1.trim() || !v2 || !v3) return showFeedback(room.id + 'fb', false, room.fbBlank);
-    if (v1.trim() === p.q1Answer && v2 === p.q2Answer && v3 === p.q3Answer) {
-      showFeedback(room.id + 'fb', true, room.fbCorrect);
-      unlockRoom(room);
-    } else {
-      showFeedback(room.id + 'fb', false, room.fbWrong);
-    }
-    return;
+    if (!v1.trim() || !v2 || !v3) mechanicFeedback = room.fbBlank;
+    else if (v1.trim() === p.q1Answer && v2 === p.q2Answer && v3 === p.q3Answer) mechanicPassed = true;
+    else mechanicFeedback = room.fbWrong;
   }
+
+  if (!mechanicPassed) return showFeedback(room.id + 'fb', false, mechanicFeedback);
+
+  // ===== Validate the short-answer (keyword check) =====
+  if (p.shortAnswer) {
+    const shortEl = document.querySelector(`${root} input[data-short]`);
+    const shortVal = (shortEl && shortEl.value || '').trim().toLowerCase();
+    if (!shortVal) return showFeedback(room.id + 'fb', false, '✗ Fill in the short answer to unlock the room.');
+    const matched = (p.shortAnswer.keywords || []).some(kw =>
+      shortVal.includes(kw.toLowerCase())
+    );
+    if (!matched) return showFeedback(room.id + 'fb', false, '✗ The short answer doesn\'t match what we\'re looking for. Reread the hint and try again.');
+  }
+
+  // ===== Validate extended responses meet minimum word count =====
+  if (p.extendedResponses && p.extendedResponses.length) {
+    for (let i = 0; i < p.extendedResponses.length; i++) {
+      const er = p.extendedResponses[i];
+      const ta = document.querySelector(`${root} textarea[data-ext="${i}"]`);
+      const txt = (ta && ta.value || '').trim();
+      const wc = (txt.match(/\S+/g) || []).length;
+      if (er.minWords && wc < er.minWords) {
+        return showFeedback(room.id + 'fb', false, `✗ The written response needs at least ${er.minWords} words (you have ${wc}). Take a moment to expand your answer.`);
+      }
+    }
+  }
+
+  // ===== All checks passed — capture written responses, then unlock =====
+  captureEscapeResponses(room);
+  showFeedback(room.id + 'fb', true, room.fbCorrect);
+  unlockRoom(room);
+}
+
+// Save free-text responses for later submission to Sheets
+function captureEscapeResponses(room) {
+  const root = `#${room.id}-comprehension`;
+  const out = { roomId: room.id, roomName: room.name, shortAnswer: '', extended: [] };
+  const shortEl = document.querySelector(`${root} input[data-short]`);
+  if (shortEl) out.shortAnswer = (shortEl.value || '').trim();
+  const tas = document.querySelectorAll(`${root} textarea[data-ext]`);
+  tas.forEach(ta => out.extended.push((ta.value || '').trim()));
+  state.responses = state.responses || {};
+  state.responses[room.id] = out;
 }
 
 /* =========================================================
